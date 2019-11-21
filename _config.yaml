@@ -1,2 +1,4 @@
 name: charlotte mach, debugger of clouds
 markdown: kramdown
+permalink: /blog/:year/:month/:day/:title
+
