@@ -1,4 +1,12 @@
-name: charlotte mach, debugger of clouds
+author:
+  name: charlotte mach
+  url: charlottemach.github.io
+tagline: debugger of clouds
+title: charlotte mach
+description: 'Debugger of clouds, slightly German, knows how to google things, likes cookies and containers. 
+Talk to me on <a href="https://twitter.com/tinydata0 target="_blank">twitter</a> or via <a href=mailto:charlotte.mach@fs.lmu.de target="_blank">email</a>. '
+
 markdown: kramdown
+
 permalink: /blog/:year/:month/:day/:title
 
