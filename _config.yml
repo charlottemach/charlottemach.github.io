@@ -22,9 +22,9 @@ title: <h1 font-size:3rem style="color:white">cookies and containers</h1>
 description: Or how I learned to love the cloud. 
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: tinydata0
+twitter_username: tinydata42
 github_username:  charlottemach
-contact: 'Talk to me on <a href="https://twitter.com/tinydata0" target="_blank">twitter</a> or via <a href=mailto:charlotte.mach@fs.lmu.de target="_blank">email</a>.'
+contact: 'Talk to me on <a href="https://twitter.com/tinydata42" target="_blank">twitter</a> or via <a href=mailto:charlotte.mach@fs.lmu.de target="_blank">email</a>.'
 
 # Build settings
 remote_theme: fongandrew/hydeout
