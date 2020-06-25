@@ -1,4 +1,7 @@
 _site/
+_pages/
+
+.DS_Store
 
 # Numerous always-ignore extensions
 *.diff
