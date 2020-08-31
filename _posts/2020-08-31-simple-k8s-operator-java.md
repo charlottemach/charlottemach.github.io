@@ -20,6 +20,7 @@ You might be providing an application that needs certain maintenance that you wa
 2. Add Maven support ([beginner's guide](https://www.jetbrains.com/help/idea/convert-a-regular-project-into-a-maven-project.html#develop_with_maven)).
 
 3. Add the Maven dependency for the [java-operator-sdk](https://github.com/ContainerSolutions/java-operator-sdk/blob/master/README.md).
+
 ```xml
 <dependency>
   <groupId>com.github.containersolutions</groupId>
@@ -36,6 +37,7 @@ This is the code being run when the Kubernetes API Server sends events about you
 6. Create a POJO representation for your CRD, [see samples with spec and status here](https://github.com/ContainerSolutions/java-operator-sdk/tree/master/samples/webserver/src/main/java/com/github/containersolutions/operator/sample).
 
 7. Register your controller in your main class. 
+
 ```java
 public class YourOperator {
 
@@ -50,6 +52,7 @@ public class YourOperator {
 9. Package your code into a jar ([beginner's guide](https://www.jetbrains.com/help/idea/creating-and-running-your-first-java-application.html#package)).
 
 10. Create a Dockerfile for your Operator ([example](https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/Dockerfile)).
+
 ```Dockerfile
 FROM openjdk:12-alpine
 
@@ -59,6 +62,7 @@ ADD target/${JAR_FILE} /usr/share/operator/your-operator.jar
 ENTRYPOINT ["java", "-jar", "/usr/share/operator/your-operator.jar"]
 ```
 11. Create your CRD and deploy your Operator to the cluster ([example for deployment YAML](https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/k8s/deployment.yaml))
+
 ```bash
 kubectl apply -f CRD.yaml
 kubectl apply -f deployment.yaml
