@@ -21,13 +21,13 @@ You might be providing an application that needs certain maintenance that you wa
 
 3. Add the Maven dependency for the [java-operator-sdk](https://github.com/ContainerSolutions/java-operator-sdk/blob/master/README.md).
 
-```xml
-<dependency>
-  <groupId>com.github.containersolutions</groupId>
-  <artifactId>operator-framework</artifactId>
-  <version>{see https://search.maven.org/search?q=a:operator-framework for latest version}</version>
-</dependency>
-```
+    ```xml
+    <dependency>
+      <groupId>com.github.containersolutions</groupId>
+      <artifactId>operator-framework</artifactId>
+      <version>{see https://search.maven.org/search?q=a:operator-framework for latest version}</version>
+    </dependency>
+    ```
 
 4. Create a CRD.yaml for your application ([example](https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/crd/crd.yaml)).
 
@@ -38,35 +38,35 @@ This is the code being run when the Kubernetes API Server sends events about you
 
 7. Register your controller in your main class. 
 
-```java
-public class YourOperator {
+    ```java
+    public class YourOperator {
 
-   public static void main(String[] args) {
-       Operator operator = new Operator(new DefaultKubernetesClient());
-       operator.registerController(new YourController());
-   }
-}
-```
+       public static void main(String[] args) {
+           Operator operator = new Operator(new DefaultKubernetesClient());
+           operator.registerController(new YourController());
+       }
+    }
+    ```
 8. Before running your code, make sure your local `kubectl` points to a cluster, for example if `kubectl version` gives no errors. If not check how to [set it up](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
 9. Package your code into a jar ([beginner's guide](https://www.jetbrains.com/help/idea/creating-and-running-your-first-java-application.html#package)).
 
 10. Create a Dockerfile for your Operator ([example](https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/Dockerfile)).
 
-```Dockerfile
-FROM openjdk:12-alpine
+    ```Dockerfile
+    FROM openjdk:12-alpine
 
-ARG JAR_FILE
-ADD target/${JAR_FILE} /usr/share/operator/your-operator.jar
+    ARG JAR_FILE
+    ADD target/${JAR_FILE} /usr/share/operator/your-operator.jar
 
-ENTRYPOINT ["java", "-jar", "/usr/share/operator/your-operator.jar"]
-```
+    ENTRYPOINT ["java", "-jar", "/usr/share/operator/your-operator.jar"]
+    ```
 11. Create your CRD and deploy your Operator to the cluster ([example for deployment YAML](https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/k8s/deployment.yaml))
 
-```bash
-kubectl apply -f CRD.yaml
-kubectl apply -f deployment.yaml
-```
+    ```bash
+    kubectl apply -f CRD.yaml
+    kubectl apply -f deployment.yaml
+    ```
 12. Create your CustomResource, matching your CRD and watch how the Operator reacts to the creation of the CustomResource!
 
 
