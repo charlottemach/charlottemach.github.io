@@ -56,3 +56,5 @@ markdown: kramdown
 
 disqus:
   shortname: noname
+
+google_analytics: G-773XQWXFGL
