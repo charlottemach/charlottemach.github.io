@@ -15,7 +15,7 @@ You might be providing an application that needs certain maintenance that you wa
 
 ### Getting started
 
-1. Create a simple Java application in your favourite IDE (e.g. [this how-to for IntelliJJ](https://www.jetbrains.com/help/idea/creating-and-running-your-first-java-application.html).
+1. Create a simple Java application in your favourite IDE (e.g. [this how-to for IntelliJJ](https://www.jetbrains.com/help/idea/creating-and-running-your-first-java-application.html)).
 
 2. Add Maven support ([beginner's guide](https://www.jetbrains.com/help/idea/convert-a-regular-project-into-a-maven-project.html#develop_with_maven)).
 
@@ -61,7 +61,7 @@ This is the code being run when the Kubernetes API Server sends events about you
 
     ENTRYPOINT ["java", "-jar", "/usr/share/operator/your-operator.jar"]
     ```
-11. Create your CRD and deploy your Operator to the cluster ([example for deployment YAML](https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/k8s/deployment.yaml))
+11. Create your CRD and deploy your Operator to the cluster ([example for deployment YAML](https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/k8s/deployment.yaml)).
 
     ```bash
     kubectl apply -f CRD.yaml
