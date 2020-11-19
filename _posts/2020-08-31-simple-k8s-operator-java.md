@@ -2,7 +2,7 @@
 layout: post
 title: "Writing a simple K8s Operator in Java"
 date: 2020-08-31
-tags: java, kubernetes, operator
+tags: java kubernetes operator
 ---
 
 Kubernetes Operator are often used to simplify the usage of applications or software in and outside a K8s cluster. They allow you to extend K8s by adding custom controllers for custom resources, allowing for example simpler database upgrades, application maintenance and automated creation of K8s resources.

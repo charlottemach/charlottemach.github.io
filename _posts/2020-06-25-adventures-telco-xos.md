@@ -2,7 +2,7 @@
 layout: post
 title: "Adventures in Telco I: Setting up a Kubernetes Deployment using XOS"
 date: 2020-06-25
-tags: telco, cord, xos, kubernetes
+tags: telco cord xos kubernetes
 ---
 
 This blog post describes how you can deploy a few Kubernetes resources onto an edge computing platform, so that those resources can be managed via XOS.
