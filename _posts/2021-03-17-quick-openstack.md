@@ -8,7 +8,7 @@ tags: openstack vm
 ### Installing OpenStack
 
 The fastest way I found (after reading on components, which gazillions of parts there are and which you probably won't need) was
-to just run [DevStack](https://docs.openstack.org/devstack/latest/#). 
+to just run [DevStack](https://docs.openstack.org/devstack/latest/#).
 **Note:** DevStack is not for production and makes A LOT of changes to your system, so install it on a dedicated machine!
 
 The install for Ubuntu 18.04 I followed can be found [here](https://docs.openstack.org/devstack/latest/#).
@@ -44,7 +44,7 @@ After that just run
 ```
 $ ./stack.sh
 ```
-and then the install will kick off. This will take a few minutes. 
+and then the install will kick off. This will take a few minutes.
 If you run into any errors like `ERROR: Cannot uninstall 'wrapt'. during upgrade` make sure the version you need is installed.
 For me it was fixed with `pip install --ignore-installed  wrapt==1.12.1 simplejson==3.17.2`.
 
