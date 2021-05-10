@@ -92,6 +92,7 @@ Create a router with a public address:
 $ openstack router create router
 ```
 Get the public network ID (DevStack creates a public, private and shared network by default), the public-subnet ID and the router ID.
+```
 $ openstack router list
 $ openstack network list
 $ openstack subnet list
