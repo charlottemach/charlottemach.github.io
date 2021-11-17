@@ -24,10 +24,13 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: tinydata42
 github_username:  charlottemach
-contact: 'Talk to me on <a href="https://twitter.com/tinydata42" target="_blank">twitter</a> or via <a href=mailto:charlotte.mach@fs.lmu.de target="_blank">email</a>.'
+#contact: 'Talk to me on <a href="https://twitter.com/tinydata42" target="_blank">twitter</a> or via <a href=mailto:charlotte.mach@fs.lmu.de target="_blank">email</a>.'
+
 
 # Build settings
-remote_theme: fongandrew/hydeout
+#remote_theme: fongandrew/hydeout
+theme: jekyll-theme-hydeout
+
 plugins:
   - jekyll-feed
 
@@ -53,8 +56,5 @@ plugins:
 
 paginate: 5
 markdown: kramdown
-
-disqus:
-  shortname: noname
 
 google_analytics: G-773XQWXFGL
