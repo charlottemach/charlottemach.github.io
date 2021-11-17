@@ -28,8 +28,8 @@ github_username:  charlottemach
 
 
 # Build settings
-#remote_theme: fongandrew/hydeout
-theme: jekyll-theme-hydeout
+remote_theme: fongandrew/hydeout
+#theme: jekyll-theme-hydeout
 
 plugins:
   - jekyll-feed
