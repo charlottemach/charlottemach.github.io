@@ -1,0 +1,20 @@
+<nav id="sidebar-nav-links">
+  {% comment %}
+   <a class="page-link {% if page.url == site.sidebar_blog_link %} active{% endif %}"
+	href={{ "/about" }}>about</a>
+  {% endcomment %}
+
+
+    <a class="page-link {% if page.url == site.sidebar_blog_link %} active{% endif %}"
+	href={{ "/" }}>blog</a>
+
+  {% comment %}
+    The code below dynamically generates a sidebar nav of pages with
+    `sidebar_link: true` in the front-matter. See readme for usage.
+  {% endcomment %}
+
+  {% include page-links.html %}
+  {% include category-links.html %}
+
+  {% include custom-nav-links.html %}
+</nav>
