@@ -193,3 +193,4 @@ docker build -t factorialWebApp:v0.1 .
 docker run -it -p 5000:5000 factorialWebApp:v0.1
 ```
 And your WebApp in now running on [http://127.0.0.1:5000](http://127.0.0.1:5000)!
+![Flask WebApp Screenshot](/assets/images/flaskapp-safari.png "WebApp")
