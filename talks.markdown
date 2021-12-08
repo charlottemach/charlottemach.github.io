@@ -6,7 +6,8 @@ sidebar_link: true
 ---
 
 Conference Talks:
-* [ONE Summit + K8s on Edge Day - The Bleeding Edge: Kubernetes Deployment Models](https://onesummit2021.sched.com/event/lStY/the-bleeding-edge-kubernetes-deployment-models-charlotte-mach-container-solutions?iframe=no), October 2021
+* [JavaZone - Kubernetes Operators for Java Developers](https://2021.javazone.no/#/program/04c3137d-6fc7-45e4-82e0-0c713b8a9aad), December 2021
+* [ONE Summit + K8s on Edge Day - The Bleeding Edge: Kubernetes Deployment Models](https://onesummit2021.sched.com/event/lStY/the-bleeding-edge-kubernetes-deployment-models-charlotte-mach-container-solutions?iframe=no) [Recording](https://www.youtube.com/watch?v=uq5DrCwnqTM), October 2021
 * [ContainerDays - Kubernetes Deployment Models at the Bleeding Edge](https://www.containerdays.io/agenda/conferenceday1/#kubernetes-depl), September 2021
 * [JFocus - Getting started with Kubernetes Operators in Java](https://www.youtube.com/watch?v=1kePLR2abno), May 2021
 * [JAX - The How and Why of writing a Kubernetes Operator in Java](https://jaxlondon.com/cloud-kubernetes-serverless/the-how-and-why-of-writing-a-kubernetes-operator-in-java/), Oct 2020 
