@@ -37,7 +37,7 @@ collector:
 ```
 Install jaeger with
 ```
-$ helm install jaeger jaegertracing/jaeger --values jaeger-values.yaml --namespace istio-system
+$ helm install jaeger jaegertracing/jaeger --values values.yaml --namespace istio-system
 ```
 Resulting in something like this
 ```
@@ -79,14 +79,14 @@ You need to restart the istiod pod for the change to take effect.
 
 The traffic data goes from each istio-proxy sidecar to agents (running as DaemonSets on each host), to 
 the collector, which validates, indexes and transforms the traces and either stores them or forwards them to Kafka.
-The default setup "samples" 1% of transactions/traces..
+The default setup "samples" 1% of transactions/traces.
 
 ![Jaeger Architecture](https://github.com/jaegertracing/documentation/blob/main/static/img/architecture-v1.png "Jaeger Architecture")
 
 
 ### Usage
 
-After sending a few requests to your application (or [bookinfo](https://istio.io/latest/docs/examples/bookinfo/) as a standin),
+After sending a few hundred requests to your application (or [bookinfo](https://istio.io/latest/docs/examples/bookinfo/) as a standin),
 you can see the traces in the UI.
 ![Traces screenshot](/assets/images/jaeger1.png "Traces")
 
