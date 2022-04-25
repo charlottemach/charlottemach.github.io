@@ -81,8 +81,7 @@ The traffic data goes from each istio-proxy sidecar to agents (running as Daemon
 the collector, which validates, indexes and transforms the traces and either stores them or forwards them to Kafka.
 The default setup "samples" 1% of transactions/traces.
 
-![Jaeger Architecture](https://github.com/jaegertracing/documentation/blob/main/static/img/architecture-v1.png "Jaeger Architecture")
-
+The github page has a great [architecture diagram here](https://github.com/jaegertracing/documentation/blob/7f1f07f182302cde97ee33db4f48958b831e7dda/static/img/architecture-v1.png).
 
 ### Usage
 
