@@ -89,9 +89,11 @@
 
 <h3 class="scrollSectionComponent">Writing the Flask app</h3>
 
-If you've never used Flask before, checkout the [docs](https://flask.palletsprojects.com/en/2.0.x/). It's a micro web framework, making it super easy to build a WebApp.
+<p>If you&#39;ve never used Flask before, checkout the <a href="https://flask.palletsprojects.com/en/2.0.x/">docs</a>. It&#39;s a micro web framework, making it super easy to build a WebApp.</p>
 
-Our `app.py` will look like this:
+
+<p>Our <code>app.py</code> will look like this:</p>
+
 <code class="scrollCodeBlockComponent">"""Main flask module."""
 import math
 from flask import Flask, render_template, request
@@ -131,16 +133,17 @@ if __name__ == '__main__':
 &lt;/body>
 &lt;/html></code>
 <p class="scrollParagraphComponent">which is basically just a form taking a single number as an input.</p>
-The second function of `app.py` receives the input from the POST request, calculates the [factorial](https://en.wikipedia.org/wiki/Factorial), the product of all positive integers less than or equal to the input. E.g. the factorial of 5 would be 5*4*3*2*1=120.
+<p>The second function of <code>app.py</code> receives the input from the POST request, calculates the <a href="https://en.wikipedia.org/wiki/Factorial">factorial</a>, the product of all positive integers less than or equal to the input. E.g. the factorial of 5 would be 5<em>4</em>3<em>2</em>1=120.</p>
+<p>The calculated number is then returned as part of a string, to create the output page.</p>
+<p>To test this code you can simply run</p>
 
-The calculated number is then returned as part of a string, to create the output page.
-
-To test this code you can simply run
 <code class="scrollCodeBlockComponent">flask run</code>
-and then you can see the App running on [http://127.0.0.1:5000/](http://127.0.0.1:5000/).
+<p>and then you can see the App running on <a href="http://127.0.0.1:5000/">http://127.0.0.1:5000/</a>.</p>
+
 
 <h3 class="scrollSectionComponent">Testing </h3>
-We use [pytest](https://docs.pytest.org/en/6.2.x/index.html) for testing, and add a few simple unit tests.
+<p>We use <a href="https://docs.pytest.org/en/6.2.x/index.html">pytest</a> for testing, and add a few simple unit tests.</p>
+
 <code class="scrollCodeBlockComponent">import app
 import json
 import pytest
@@ -230,7 +233,8 @@ We're using gunicorn as a production server for Python.</p>
 <p class="scrollParagraphComponent">Then you simply build and run it</p>
 <code class="scrollCodeBlockComponent">docker build -t factorialWebApp:v0.1 .
 docker run -it -p 5000:5000 factorialWebApp:v0.1</code>
-And your WebApp in now running on [http://127.0.0.1:5000](http://127.0.0.1:5000)!
+<p>And your WebApp in now running on <a href="http://127.0.0.1:5000">http://127.0.0.1:5000</a>!</p>
+
 <figure class="scrollImageComponent"><a href="assets/images/flaskapp-safari.png" target="_blank"><img src="assets/images/flaskapp-safari.png" width="1314" height="896" loading="lazy"/></a></figure>
 <p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2021-11-29-simple-flask-docker-app.scroll">View source</a></p></div>
   <div class="scrollFooterComponent">

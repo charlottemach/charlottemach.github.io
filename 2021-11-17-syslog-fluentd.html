@@ -72,8 +72,9 @@
  });</script></div>
 
 <p class="scrollParagraphComponent"><span class="scrollDateComponent">November 17, 2021 — </span>OpenShift comes with loads of handy operators managing various Kubernetes resources for you, some open source, some not.</p>
-[OpenShift Logging](https://github.com/openshift/cluster-logging-operator) is the wrapper for an EFK stack running on your cluster.
-Like with other operators you don't create your own daemonsets or deployments, instead you configure it with a CustomResource called [ClusterLogging](https://docs.openshift.com/container-platform/4.9/logging/cluster-logging.html).
+<p><a href="https://github.com/openshift/cluster-logging-operator">OpenShift Logging</a> is the wrapper for an EFK stack running on your cluster.
+Like with other operators you don&#39;t create your own daemonsets or deployments, instead you configure it with a CustomResource called <a href="https://docs.openshift.com/container-platform/4.9/logging/cluster-logging.html">ClusterLogging</a>.</p>
+
 <p class="scrollParagraphComponent">So if you're thinking of using this Fluentd for anything other than logs from this cluster, you're pretty much out of luck.</p>
 
 <h4 class="scrollSubsectionComponent">Note</h4>
@@ -81,7 +82,8 @@ Like with other operators you don't create your own daemonsets or deployments, i
 
 <p class="scrollParagraphComponent">You can however piggyback on the resources deployed by the operator by adding a secondary Fluentd in the same namespace with some modifications.</p>
 
-We'll create a Fluentd that acts as a syslog receiver, though you could in theory add any input you like, see the list of [Fluentd input plugins](https://www.fluentd.org/plugins).
+<p>We&#39;ll create a Fluentd that acts as a syslog receiver, though you could in theory add any input you like, see the list of <a href="https://www.fluentd.org/plugins">Fluentd input plugins</a>.</p>
+
 <p class="scrollParagraphComponent">And we'll re-use the ElasticSearch and Kibana pods to visualize those logs.</p>
 
 <h3 class="scrollSectionComponent">Secondary Fluentd</h3>
@@ -189,7 +191,8 @@ spec:
         name: fluentd-trusted-ca-bundle</code>
 <p class="scrollParagraphComponent">The only differences between this an a generic deployment are the additional mounted volumes for the certificates as well as an image that already contains the ElasticSearch plugin.</p>
 
-You can build your own image as well, see the README of the original [Fluentd image](https://hub.docker.com/r/fluent/fluentd/) for instructions.
+<p>You can build your own image as well, see the README of the original <a href="https://hub.docker.com/r/fluent/fluentd/">Fluentd image</a> for instructions.</p>
+
 
 <h4 class="scrollSubsectionComponent">Service</h4>
 <p class="scrollParagraphComponent">After creating the deployment we only need to expose the port from inside the pod to the outside world. If you have a loadbalancer or ingress, use that. Otherwise a Nodeport works just as well.</p>

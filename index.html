@@ -88,7 +88,8 @@
     getLinks()[1].click()
  });</script></div>
 <p class="scrollParagraphComponent"><span class="scrollDateComponent">April 13, 2022 — </span>Understanding and debugging microservices communication can be a challenge in itself. Luckily there are a bunch of tools to make it easier.</p>
-In addition to the observability you get from running visualization tooling like Kiali with your service mesh, tracing provides valuable information for troubleshooting. That's where [Jaeger](https://github.com/jaegertracing/jaeger) comes in.<a class="scrollContinueReadingLink" href="2022-04-13-jaeger-eks.html">Continue reading...</a></div>
+<p>In addition to the observability you get from running visualization tooling like Kiali with your service mesh, tracing provides valuable information for troubleshooting. That&#39;s where <a href="https://github.com/jaegertracing/jaeger">Jaeger</a> comes in.</p>
+<a class="scrollContinueReadingLink" href="2022-04-13-jaeger-eks.html">Continue reading...</a></div>
    <div class="scrollGroupPageFileContainerComponent"><h1 class="scrollTitleComponent"><a href="2022-01-06-trying-litmus.html">Trying out Chaos Engineering using Litmus</a></h1>
 <div class="scrollKeyboardNav"><a href="2022-04-13-jaeger-eks.html">2022-04-13-jaeger-eks.html</a> · 2022-01-06-trying-litmus.html · <a href="2021-12-16-lambda-s3-dynamo.html">2021-12-16-lambda-s3-dynamo.html</a><script>document.addEventListener('keydown', function(event) {
   if (document.activeElement !== document.body) return
@@ -155,8 +156,9 @@ bucket.grantRead(new AccountRootPrincipal());</code><a class="scrollContinueRead
     getLinks()[1].click()
  });</script></div>
 <p class="scrollParagraphComponent"><span class="scrollDateComponent">November 17, 2021 — </span>OpenShift comes with loads of handy operators managing various Kubernetes resources for you, some open source, some not.</p>
-[OpenShift Logging](https://github.com/openshift/cluster-logging-operator) is the wrapper for an EFK stack running on your cluster.
-Like with other operators you don't create your own daemonsets or deployments, instead you configure it with a CustomResource called [ClusterLogging](https://docs.openshift.com/container-platform/4.9/logging/cluster-logging.html).
+<p><a href="https://github.com/openshift/cluster-logging-operator">OpenShift Logging</a> is the wrapper for an EFK stack running on your cluster.
+Like with other operators you don&#39;t create your own daemonsets or deployments, instead you configure it with a CustomResource called <a href="https://docs.openshift.com/container-platform/4.9/logging/cluster-logging.html">ClusterLogging</a>.</p>
+
 <p class="scrollParagraphComponent">So if you're thinking of using this Fluentd for anything other than logs from this cluster, you're pretty much out of luck.</p>
 <h4 class="scrollSubsectionComponent">Note</h4>
 <p class="scrollParagraphComponent">You can set everything to Unmanaged and change the configs, but that's not sustainable as you're basically disabling any operator actions. Also editing what's supposed to be an indented file represented as one long string is no fun.</p>
@@ -183,8 +185,9 @@ Like with other operators you don't create your own daemonsets or deployments, i
  });</script></div>
 <p class="scrollParagraphComponent"><span class="scrollDateComponent">May 3, 2021 — </span>If you're just getting starting with Zero-Touch-Provisioning there are a few networking challenges ahead for you. Luckily there are some great tools to support out there, which make getting started very simple. </p>
 <h3 class="scrollSectionComponent">DHCP</h3>
-The Dynamic Host Configuration Protocol (DHCP) is used to dynamically assign IP addresses to devices connected via a [layer 2 network](https://en.wikipedia.org/wiki/Data_link_layer). 
-That means a DHCP server needs to exist in the same network already, or you're stuck with having to assign static IPs.
+<p>The Dynamic Host Configuration Protocol (DHCP) is used to dynamically assign IP addresses to devices connected via a <a href="https://en.wikipedia.org/wiki/Data_link_layer">layer 2 network</a>. 
+That means a DHCP server needs to exist in the same network already, or you&#39;re stuck with having to assign static IPs.</p>
+
 <p class="scrollParagraphComponent">DHCP has four phases of operation:</p>
 <figure class="scrollImageComponent"><a href="assets/images/dhcp1.png" target="_blank"><img src="assets/images/dhcp1.png" width="840" height="1075" loading="lazy"/></a></figure><a class="scrollContinueReadingLink" href="2021-05-03-dhcp-relays.html">Continue reading...</a></div>
    <div class="scrollGroupPageFileContainerComponent"><h1 class="scrollTitleComponent"><a href="2021-04-01-ipc.html">WTF is Inter-Process Communication</a></h1>
@@ -218,7 +221,8 @@ That means a DHCP server needs to exist in the same network already, or you're s
  });</script></div>
 
 <p class="scrollParagraphComponent"><span class="scrollDateComponent">April 1, 2021 — </span>A colleague and I wrote this short overview over different IPC mechanisms and when to use what in your microservices architecture. It covers REST, GraphQL, gRPC and RabbitMQ and compares them based on different criteria.</p>
-<a href="https://blog.container-solutions.com/wtf-is-inter-process-communication">Link to post on CS blog.</a>
+<p><a href="https://blog.container-solutions.com/wtf-is-inter-process-communication">Link to post on CS blog.</a></p>
+
 <p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2021-04-01-ipc.scroll">View source</a></p></div>
    <div class="scrollGroupPageFileContainerComponent"><h1 class="scrollTitleComponent"><a href="2021-03-17-quick-openstack.html">Getting started with OpenStack</a></h1>
 <div class="scrollKeyboardNav"><a href="2021-04-01-ipc.html">2021-04-01-ipc.html</a> · 2021-03-17-quick-openstack.html · <a href="2020-11-03-windows-kubevirt-k3s.html">2020-11-03-windows-kubevirt-k3s.html</a><script>document.addEventListener('keydown', function(event) {
@@ -241,7 +245,8 @@ That means a DHCP server needs to exist in the same network already, or you're s
  });</script></div>
 <p class="scrollParagraphComponent"><span class="scrollDateComponent">November 3, 2020 — </span>To get the obvious "WTF, why would you wanna do this?" out of the way: We had to. For reasons.</p>
 <h3 class="scrollSectionComponent">Reasons</h3>
-In cases where you need a Windows VM, but don't want to leave your Kubernetes platform, [KubeVirt](https://kubevirt.io/) is your friend.
+<p>In cases where you need a Windows VM, but don&#39;t want to leave your Kubernetes platform, <a href="https://kubevirt.io/">KubeVirt</a> is your friend.</p>
+
 <p class="scrollParagraphComponent">Be warned that this is going to be a heavy workload, so go for something with a lot of CPU, memory and disk space.</p><a class="scrollContinueReadingLink" href="2020-11-03-windows-kubevirt-k3s.html">Continue reading...</a></div>
    <div class="scrollGroupPageFileContainerComponent"><h1 class="scrollTitleComponent"><a href="2020-08-31-simple-k8s-operator-java.html">Writing a simple K8s Operator in Java</a></h1>
 <div class="scrollKeyboardNav"><a href="2020-11-03-windows-kubevirt-k3s.html">2020-11-03-windows-kubevirt-k3s.html</a> · 2020-08-31-simple-k8s-operator-java.html · <a href="2020-06-25-adventures-telco-xos.html">2020-06-25-adventures-telco-xos.html</a><script>document.addEventListener('keydown', function(event) {
@@ -254,7 +259,8 @@ In cases where you need a Windows VM, but don't want to leave your Kubernetes pl
  });</script></div>
 <p class="scrollParagraphComponent"><span class="scrollDateComponent">August 31, 2020 — </span>Kubernetes Operator are often used to simplify the usage of applications or software in and outside a K8s cluster. They allow you to extend K8s by adding custom controllers for custom resources, allowing for example simpler database upgrades, application maintenance and automated creation of K8s resources.</p>
 <p class="scrollParagraphComponent"></p>
-There is a large number of Operators readily availabe, from [OperatorHub](https://operatorhub.io/) or [GitHub](https://github.com/operator-framework/awesome-operators).
+<p>There is a large number of Operators readily availabe, from <a href="https://operatorhub.io/">OperatorHub</a> or <a href="https://github.com/operator-framework/awesome-operators">GitHub</a>.</p>
+
 <h3 class="scrollSectionComponent">Why write your own?</h3>
 <p class="scrollParagraphComponent">You might be providing an application that needs certain maintenance that you want to automate. You might be providing a database to your developers that you don't want them to have to provision themselves. You might just wanna learn more about Kubernetes.</p><a class="scrollContinueReadingLink" href="2020-08-31-simple-k8s-operator-java.html">Continue reading...</a></div>
    <div class="scrollGroupPageFileContainerComponent"><h1 class="scrollTitleComponent"><a href="2020-06-25-adventures-telco-xos.html">Adventures in Telco I: Setting up a Kubernetes Deployment using XOS</a></h1>

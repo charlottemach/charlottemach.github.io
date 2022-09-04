@@ -75,8 +75,9 @@
 
 <h3 class="scrollSectionComponent">DHCP</h3>
 
-The Dynamic Host Configuration Protocol (DHCP) is used to dynamically assign IP addresses to devices connected via a [layer 2 network](https://en.wikipedia.org/wiki/Data_link_layer). 
-That means a DHCP server needs to exist in the same network already, or you're stuck with having to assign static IPs.
+<p>The Dynamic Host Configuration Protocol (DHCP) is used to dynamically assign IP addresses to devices connected via a <a href="https://en.wikipedia.org/wiki/Data_link_layer">layer 2 network</a>. 
+That means a DHCP server needs to exist in the same network already, or you&#39;re stuck with having to assign static IPs.</p>
+
 
 
 <p class="scrollParagraphComponent">DHCP has four phases of operation:</p>
@@ -90,7 +91,8 @@ That means a DHCP server needs to exist in the same network already, or you're s
 <li>Acknowledge - Accepting the request and relaying other information such as lease time</li>
 </ol>
 
-If you're just getting started setting up a data center and want to do zero touch provisioning, you're generally gonna want some way of accessing the [Baseboard Management Controllers (BMC)](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface#Baseboard_management_controller) to manage your servers. To access those, you need their IPs. But if there's no DHCP server in the same network, how can you even get started? That's where DHCP relays come in.
+<p>If you&#39;re just getting started setting up a data center and want to do zero touch provisioning, you&#39;re generally gonna want some way of accessing the <a href="https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface#Baseboard_management_controller">Baseboard Management Controllers (BMC)</a> to manage your servers. To access those, you need their IPs. But if there&#39;s no DHCP server in the same network, how can you even get started? That&#39;s where DHCP relays come in.</p>
+
 
 <h3 class="scrollSectionComponent">DHCP Relays</h3>
 
@@ -111,13 +113,15 @@ If you're just getting started setting up a data center and want to do zero touc
 
 <p class="scrollParagraphComponent">Installing (e.g. on Ubuntu 20.04) is very simple, just run</p>
 <code class="scrollCodeBlockComponent"># apt install isc-dhcp-relay</code>
-Edit the config-file at `/etc/default/isc-dhcp-relay` so that the relay agent uses the correct DHCP server and interface:
+<p>Edit the config-file at <code>/etc/default/isc-dhcp-relay</code> so that the relay agent uses the correct DHCP server and interface:</p>
+
 <code class="scrollCodeBlockComponent">SERVERS=&lt;IP to your DHCP server>
 
 INTERFACES=&lt;Interface connecting to your DHCP server></code>
 <p class="scrollParagraphComponent">(Re)start the service</p>
 <code class="scrollCodeBlockComponent"># systemctl restart isc-dhcp-relay</code>
-Finally check if your service is up and running correctly and then you can either check your DHCP server or tcpdump (e.g. `tcpdump -i <INTERFACE> -pvn port 67 and port 68` or `tcpdump -i <INTERFACE> -nv '(udp port 546 or port 547)'` for IPv6).
+<p>Finally check if your service is up and running correctly and then you can either check your DHCP server or tcpdump (e.g. <code>tcpdump -i &lt;INTERFACE&gt; -pvn port 67 and port 68</code> or <code>tcpdump -i &lt;INTERFACE&gt; -nv &#39;(udp port 546 or port 547)&#39;</code> for IPv6).</p>
+
 <p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2021-05-03-dhcp-relays.scroll">View source</a></p></div>
   <div class="scrollFooterComponent">
    <div class="scrollSocialMediaIconsComponent">

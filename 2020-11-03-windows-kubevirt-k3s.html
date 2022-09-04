@@ -74,7 +74,8 @@
 
 <h3 class="scrollSectionComponent">Reasons</h3>
 
-In cases where you need a Windows VM, but don't want to leave your Kubernetes platform, [KubeVirt](https://kubevirt.io/) is your friend.
+<p>In cases where you need a Windows VM, but don&#39;t want to leave your Kubernetes platform, <a href="https://kubevirt.io/">KubeVirt</a> is your friend.</p>
+
 <p class="scrollParagraphComponent">Be warned that this is going to be a heavy workload, so go for something with a lot of CPU, memory and disk space.</p>
 
 
@@ -83,12 +84,18 @@ In cases where you need a Windows VM, but don't want to leave your Kubernetes pl
 
 <p class="scrollParagraphComponent">Let's start with installing K3s and KubeVirt on an Ubuntu 20.10 instance.</p>
 
-- Install K3s (<a href=https://rancher.com/docs/k3s/latest/en/installation/install-options/>docs</a>).
+<ul>
+<li>Install K3s (<a href=https://rancher.com/docs/k3s/latest/en/installation/install-options/>docs</a>).</li>
+</ul>
+
 <code class="scrollCodeBlockComponent">apt update && apt -y upgrade
 curl -sfL https://get.k3s.io | sh -</code>
 
 <p class="scrollParagraphComponent">Check if the install succeeded, e.g. by creating a deployment and seeing if pods are running.</p>
-- Install KubeVirt (<a href=https://kubevirt.io/quickstart_minikube/>docs</a>). I used the operator, but any of those should do the trick.
+<ul>
+<li>Install KubeVirt (<a href=https://kubevirt.io/quickstart_minikube/>docs</a>). I used the operator, but any of those should do the trick.</li>
+</ul>
+
 <code class="scrollCodeBlockComponent">export VERSION=$(curl -s https://api.github.com/repos/kubevirt/kubevirt/releases | grep tag_name | grep -v -- '-rc' | head -1 | awk -F': ' '{print $2}' | sed 's/,//' | xargs)
 
 echo $VERSION
@@ -99,22 +106,31 @@ kubectl create -f https://github.com/kubevirt/kubevirt/releases/download/${VERSI
 <code class="scrollCodeBlockComponent">kubectl get kubevirt.kubevirt.io/kubevirt -n kubevirt -o=jsonpath="{.status.phase}"
 kubectl get all -n kubevirt</code>
 
-- Install virtctl to control KubeVirt VMs. I used the Kubernetes plugin manager [Krew](https://krew.sigs.k8s.io/).
+<ul>
+<li>Install virtctl to control KubeVirt VMs. I used the Kubernetes plugin manager <a href="https://krew.sigs.k8s.io/">Krew</a>.</li>
+</ul>
+
 <code class="scrollCodeBlockComponent">apt-get install git
 (   set -x; cd "$(mktemp -d)" &&   curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.tar.gz" &&   tar zxvf krew.tar.gz &&   KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_$(uname -m | sed -e 's/x86_64/amd64/' -e 's/arm.*$/arm/')" &&   "$KREW" install krew; )
 
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 kubectl krew install virt</code>
 
-- Install [Containerized-Data-Importer (CDI)](https://github.com/kubevirt/containerized-data-importer/blob/master/README.md) to manage your VM disk later on. I used the operator version.
+<ul>
+<li>Install <a href="https://github.com/kubevirt/containerized-data-importer/blob/master/README.md">Containerized-Data-Importer (CDI)</a> to manage your VM disk later on. I used the operator version.</li>
+</ul>
+
 
 <code class="scrollCodeBlockComponent">export VERSION=$(curl -s https://github.com/kubevirt/containerized-data-importer/releases/latest | grep -o "v[0-9]\.[0-9]*\.[0-9]*")
 kubectl create -f https://github.com/kubevirt/containerized-data-importer/releases/download/$VERSION/cdi-operator.yaml
 kubectl create -f https://github.com/kubevirt/containerized-data-importer/releases/download/$VERSION/cdi-cr.yaml</code>
 
 <h3 class="scrollSectionComponent">Add Windows</h3>
-- Download a Windows ISO file (the [Microsoft Evaluation Center](https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2019) lets you trial a Windows ISO for 180 days).
-- Upload the ISO.
+<ul>
+<li>Download a Windows ISO file (the <a href="https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2019">Microsoft Evaluation Center</a> lets you trial a Windows ISO for 180 days).</li>
+<li>Upload the ISO.</li>
+</ul>
+
 <code class="scrollCodeBlockComponent"># Get the CDI upload proxy service IP:
 kubectl get svc -n cdi
    
@@ -123,13 +139,20 @@ kubectl virt image-upload --image-path &lt;/path/to/iso> \
   --pvc-name iso-win2k19 --access-mode ReadWriteOnce \
   --pvc-size 10G --uploadproxy-url &lt;upload-proxy service:443> \
   --insecure --wait-secs=240</code>
-More info on the upload command can be found [here](https://kubevirt.io/2019/How-To-Import-VM-into-Kubevirt.html). I had to change the access mode of the PVC to ReadWriteOnce, as the default local-path storageclass of K3s doesn't support any other modes at this point. Since we're only using one node this doesn't make a difference, but will be an issue for larger K3s clusters.
-  
-- Use containerd to pull the virtio-container-disk image containing the drivers. If you're using Docker, change the command to pull via docker.
+<p>More info on the upload command can be found <a href="https://kubevirt.io/2019/How-To-Import-VM-into-Kubevirt.html">here</a>. I had to change the access mode of the PVC to ReadWriteOnce, as the default local-path storageclass of K3s doesn&#39;t support any other modes at this point. Since we&#39;re only using one node this doesn&#39;t make a difference, but will be an issue for larger K3s clusters.
+  </p>
+
+<ul>
+<li>Use containerd to pull the virtio-container-disk image containing the drivers. If you&#39;re using Docker, change the command to pull via docker.</li>
+</ul>
+
 <code class="scrollCodeBlockComponent">ctr image pull kubevirt/virtio-container-disk</code>
 
 <h3 class="scrollSectionComponent">Create the VM</h3>
-- Create a YAML file with a PVC and a VM.
+<ul>
+<li>Create a YAML file with a PVC and a VM.</li>
+</ul>
+
 <code class="scrollCodeBlockComponent">---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -184,17 +207,27 @@ spec:
       - containerDisk:
           image: kubevirt/virtio-container-disk
         name: virtiocontainerdisk</code>
-- Create and use the VM.
+<ul>
+<li>Create and use the VM.</li>
+</ul>
+
 <code class="scrollCodeBlockComponent">kubectl apply -f win2k19.yaml
 kubectl virt start win2k19-iso
 # If you're running this on a remote machine, use X-forwarding and
 # apt-get install virt-viewer
 kubectl virt vnc win2k19-iso</code>
-- Walk through the Windows install to get a running Windows VM.
+<ul>
+<li>Walk through the Windows install to get a running Windows VM.</li>
+</ul>
+
 <figure class="scrollImageComponent"><a href="assets/images/windows.png" target="_blank"><img src="assets/images/windows.png" width="2880" height="1800" loading="lazy"/></a></figure>
 <h4 class="scrollSubsectionComponent">Note</h4>
-If your drivers didn't install successfully and your Network connection isn't working because of that, you need to go into the Device Manager on Windows, click on the OtherDevices and update the driver from your local drive where virtio has stored it's files. In my case it was `E:\`.
-- Final step is to add a service to allow for RDP connections.
+<p>If your drivers didn&#39;t install successfully and your Network connection isn&#39;t working because of that, you need to go into the Device Manager on Windows, click on the OtherDevices and update the driver from your local drive where virtio has stored it&#39;s files. In my case it was <code>E:\</code>.</p>
+
+<ul>
+<li>Final step is to add a service to allow for RDP connections.</li>
+</ul>
+
 <code class="scrollCodeBlockComponent">apiVersion: v1
 kind: Service
 metadata:
@@ -210,10 +243,14 @@ spec:
   selector:
     kubevirt.io/domain: win2k19-iso
   type: NodePort</code>
-Which then allows you to access your Windows VM via RDP on `<NodeIp>:30000`.
+<p>Which then allows you to access your Windows VM via RDP on <code>&lt;NodeIp&gt;:30000</code>.</p>
+
 <h3 class="scrollSectionComponent">Further reading</h3>
 
-1. Adapted to K3s from [https://kubevirt.io/2020/KubeVirt-installing_Microsoft_Windows_from_an_iso.html](https://kubevirt.io/2020/KubeVirt-installing_Microsoft_Windows_from_an_iso.html)
+<ol>
+<li>Adapted to K3s from <a href="https://kubevirt.io/2020/KubeVirt-installing_Microsoft_Windows_from_an_iso.html">https://kubevirt.io/2020/KubeVirt-installing_Microsoft_Windows_from_an_iso.html</a></li>
+</ol>
+
 <p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2020-11-03-windows-kubevirt-k3s.scroll">View source</a></p></div>
   <div class="scrollFooterComponent">
    <div class="scrollSocialMediaIconsComponent">

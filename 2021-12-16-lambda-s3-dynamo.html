@@ -104,7 +104,8 @@ bucket.grantRead(new AccountRootPrincipal());</code>
 });</code>
 
 
-The typescript files will usually be in the `lib` folder (easy to get starting using the [AWS docs](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#getting_started_bootstrap)) and are added to the app in `bin`. The above Lambda function code is expected to be found in a file `lambda/lambda_function.py` in the same directory as `bin` and `lib`.
+<p>The typescript files will usually be in the <code>lib</code> folder (easy to get starting using the <a href="https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#getting_started_bootstrap">AWS docs</a>) and are added to the app in <code>bin</code>. The above Lambda function code is expected to be found in a file <code>lambda/lambda_function.py</code> in the same directory as <code>bin</code> and <code>lib</code>.</p>
+
 
 <h3 class="scrollSectionComponent">Python code</h3>
 
@@ -142,7 +143,8 @@ def lambda_handler(event, context):
 
 <h3 class="scrollSectionComponent">Deployment</h3>
 
-Now all you have to do is create your stack using `cdk deploy` and testing the function by adding a CCSV file to your S3 bucket.
+<p>Now all you have to do is create your stack using <code>cdk deploy</code> and testing the function by adding a CCSV file to your S3 bucket.</p>
+
 <code class="scrollCodeBlockComponent">User; Id; First Name; Age
 spidey;123;Peter;22
 mi6;007;James;60

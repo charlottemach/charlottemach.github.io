@@ -77,7 +77,8 @@
 
 <h3 class="scrollSectionComponent">Checking out PowerDNS</h3>
 <p class="scrollParagraphComponent">While most other nameservers combine recursive and authoritative functions, PowerDNS or pdns comes in two flavours (pdns-auth and pdns-recursor).</p>
-Trying it out by installing the binaries is easy enough with the [installation docs](https://doc.powerdns.com/authoritative/installation.html). The default comes with a bind backend, but in this example we're using sqlite3 instead.
+<p>Trying it out by installing the binaries is easy enough with the <a href="https://doc.powerdns.com/authoritative/installation.html">installation docs</a>. The default comes with a bind backend, but in this example we&#39;re using sqlite3 instead.</p>
+
 
 <p class="scrollParagraphComponent">So for the containerized version, all we need is a server with:</p>
 <ul class="scrollUnorderedListComponent">
@@ -132,27 +133,32 @@ networks:
 <p class="scrollParagraphComponent">Before running pdns, the sqlite database needs to be created.</p>
 <code class="scrollCodeBlockComponent">mkdir /var/lib/powerdns
 sqlite3 -init schema.sql /var/lib/powerdns/pdns.sqlite3</code>
-Where schema.sql is taken from [here](https://doc.powerdns.com/authoritative/backends/generic-sqlite3.html). 
+<p>Where schema.sql is taken from <a href="https://doc.powerdns.com/authoritative/backends/generic-sqlite3.html">here</a>. </p>
+
 
 <h3 class="scrollSectionComponent">Environment variables for API access</h3>
 <p class="scrollParagraphComponent">To enable the API access to pdns, make sure you have the following environment variables set:</p>
 <code class="scrollCodeBlockComponent">export PDNS_RECURSOR_API_KEY=changeme
 export PDNS_AUTH_API_KEY=changeme</code>
 
-Starting the containers is as simple as running `docker-compose up -d` in the folder where the above YAML file is.
+<p>Starting the containers is as simple as running <code>docker-compose up -d</code> in the folder where the above YAML file is.</p>
+
 
 <h3 class="scrollSectionComponent">Testing</h3>
-Check if your containers are successfully running with `docker-compose ps -a`.
-If they're up, you can test the service using
+<p>Check if your containers are successfully running with <code>docker-compose ps -a</code>.
+If they&#39;re up, you can test the service using</p>
+
 <code class="scrollCodeBlockComponent">curl -v -H 'X-API-Key: changeme' http://&lt;serverIP>:8081/api/v1/servers/localhost/ | jq</code>
 
-To add zones to the authoritative server you can use `pdnsutil` or the [API](https://doc.powerdns.com/authoritative/http-api/zone.html). 
+<p>To add zones to the authoritative server you can use <code>pdnsutil</code> or the <a href="https://doc.powerdns.com/authoritative/http-api/zone.html">API</a>. </p>
+
 
 <p class="scrollParagraphComponent">To check if you've successfully added a zone or record, you can check with either</p>
 <code class="scrollCodeBlockComponent">nslookup &lt;domain> &lt;serverIP></code>
 <p class="scrollParagraphComponent">or </p>
 <code class="scrollCodeBlockComponent">dig &lt;domain> @serverIP</code>
-Adding a `--port 5300` to the dig command, let's you test the authoritative server directly. 
+<p>Adding a <code>--port 5300</code> to the dig command, let&#39;s you test the authoritative server directly. </p>
+
 <p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2021-09-08-powerdns.scroll">View source</a></p></div>
   <div class="scrollFooterComponent">
    <div class="scrollSocialMediaIconsComponent">

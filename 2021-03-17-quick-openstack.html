@@ -78,8 +78,9 @@
 <p class="scrollParagraphComponent">DevStack is not for production and makes A LOT of changes to your system, so install it on a dedicated machine!</p>
 
 <h3 class="scrollSectionComponent">Installing OpenStack</h3>
-The install for Ubuntu 18.04 I followed can be found [here](https://docs.openstack.org/devstack/latest/#). 
-First add a dedicated user (or just use *ubuntu*). The following are run as *root*, but can also be done with *sudo*.
+<p>The install for Ubuntu 18.04 I followed can be found <a href="https://docs.openstack.org/devstack/latest/#">here</a>. 
+First add a dedicated user (or just use <em>ubuntu</em>). The following are run as <em>root</em>, but can also be done with <em>sudo</em>.</p>
+
 <code class="scrollCodeBlockComponent"># useradd -s /bin/bash -d /opt/stack -m stack
 # echo "stack ALL=(ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/stack
 # su - stack</code>
@@ -103,9 +104,10 @@ enable_plugin aodh https://opendev.org/openstack/aodh
 EOF</code>
 <p class="scrollParagraphComponent">After that just run</p>
 <code class="scrollCodeBlockComponent">$ ./stack.sh</code>
-and then the install will kick off. This will take a few minutes.
-If you run into any errors like `ERROR: Cannot uninstall 'wrapt'. during upgrade` make sure the version you need is installed.
-For me it was fixed with `pip install --ignore-installed  wrapt==1.12.1 simplejson==3.17.2`.
+<p>and then the install will kick off. This will take a few minutes.
+If you run into any errors like <code>ERROR: Cannot uninstall &#39;wrapt&#39;. during upgrade</code> make sure the version you need is installed.
+For me it was fixed with <code>pip install --ignore-installed  wrapt==1.12.1 simplejson==3.17.2</code>.</p>
+
 
 <p class="scrollParagraphComponent">After the install you should have access to keystone, glance, nova, placement, cinder, neutron, horizon and also ceilometer and heat if you used my local.conf.
 Try pointing a browser to the IP of the Ubuntu machine, it should give you the OpenStack interface where you can login as *admin* with the password defined in your config file.</p>
@@ -122,8 +124,9 @@ export OS_PASSWORD=YourSuperSecretPassword
 export OS_AUTH_URL=http://&lt;ServerIP>/identity
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2</code>
-and don't forget to `source openrc`.
-Try it with e.g.
+<p>and don&#39;t forget to <code>source openrc</code>.
+Try it with e.g.</p>
+
 <code class="scrollCodeBlockComponent">$ openstack user list</code>
 
 <h3 class="scrollSectionComponent">Creating your first VM</h3>
@@ -144,10 +147,12 @@ $ openstack subnet list</code>
 <p class="scrollParagraphComponent">And then set up the router:</p>
 <code class="scrollCodeBlockComponent">$ openstack router set ROUTER_ID --external-gateway PUBLIC_NETWORK_ID
 $ openstack router add subnet ROUTER_ID PUBLIC_SUBNET_ID</code>
-Add an image after downloading it (for example [Debian](http://cdimage.debian.org/cdimage/openstack/current-9/)):
+<p>Add an image after downloading it (for example <a href="http://cdimage.debian.org/cdimage/openstack/current-9/">Debian</a>):</p>
+
 <code class="scrollCodeBlockComponent">$ openstack image create --container-format bare --disk-format qcow2 \
        --file debian-9-openstack-amd64.qcow2 debian-9-openstack-amd64</code>
-Launch an instance. The flavor is the machine size (e.g. **1** is 512MB RAM and 1vCPU, **3** is 4096MB RAM and 4vCPUs), the image ID can be checked with `openstack image list`.
+<p>Launch an instance. The flavor is the machine size (e.g. <strong>1</strong> is 512MB RAM and 1vCPU, <strong>3</strong> is 4096MB RAM and 4vCPUs), the image ID can be checked with <code>openstack image list</code>.</p>
+
 <code class="scrollCodeBlockComponent">$ openstack server create --flavor 3 --image IMAGE_ID --key-name NEW_KEY_NAME \
   --security-group ssh_icmp_access DEBIAN_INSTANCE_NAME</code>
 <p class="scrollParagraphComponent">Connect the instance to the private network
@@ -157,7 +162,8 @@ $ openstack server add floating ip DEBIAN_INSTANCE_NAME FLOATING_IP</code>
 <p class="scrollParagraphComponent">Now you should be able to SSH into that server with the private key and floating IP address, using the debian user</p>
 <code class="scrollCodeBlockComponent">$ ssh -i ~/.ssh/yourkey debian@FLOATING_IP</code>
 <h4 class="scrollSubsectionComponent">Notes</h4>
-For more info check out the [OpenStack docs](https://docs.openstack.org/ocata/user-guide/).
+<p>For more info check out the <a href="https://docs.openstack.org/ocata/user-guide/">OpenStack docs</a>.</p>
+
 <p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2021-03-17-quick-openstack.scroll">View source</a></p></div>
   <div class="scrollFooterComponent">
    <div class="scrollSocialMediaIconsComponent">
