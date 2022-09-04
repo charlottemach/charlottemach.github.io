@@ -7,6 +7,7 @@ aftertext
 
 endSnippet
 import settings.scroll
+import ga.scroll
 groups index
 keyboardNav
 
@@ -209,3 +210,4 @@ paragraph
 section Future
 paragraph
  If the Prometheus or Istio version change, check out the Prometheus that comes with Istio and how the sidecar of that instance requests certificates and uses them. 
+ga

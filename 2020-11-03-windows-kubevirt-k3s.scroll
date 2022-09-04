@@ -2,6 +2,7 @@ title Running a Windows VM on KubeVirt on K3s
 date 2020-11-03
 import settings.scroll
 import markups.scroll
+import ga.scroll
 groups index
 keyboardNav
 
@@ -181,3 +182,5 @@ section Further reading
 
 markdown
  1. Adapted to K3s from [https://kubevirt.io/2020/KubeVirt-installing_Microsoft_Windows_from_an_iso.html](https://kubevirt.io/2020/KubeVirt-installing_Microsoft_Windows_from_an_iso.html)
+
+ga

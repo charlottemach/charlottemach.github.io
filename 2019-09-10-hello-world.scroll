@@ -1,6 +1,7 @@
 title Unavoidable Hello World
 date 2019-09-10
 import settings.scroll
+import ga.scroll
 groups index
 keyboardNav
 
@@ -10,3 +11,5 @@ aftertext
 
 paragraph
  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam et quam lobortis eros porta pellentesque porta a lorem. Etiam turpis lacus, bibendum vel aliquam a, elementum nec sem. Vivamus fringilla erat sit amet ligula volutpat volutpat. Mauris efficitur aliquam volutpat. Suspendisse pulvinar convallis libero commodo viverra. Morbi sit amet placerat dolor, in facilisis justo. Vestibulum suscipit, urna sit amet posuere consequat, nibh diam euismod turpis, sed porttitor leo justo in nibh. Proin in nisl finibus velit vulputate elementum non eu tortor. Pellentesque convallis eros sed sem dignissim placerat. Mauris posuere urna vel dui bibendum hendrerit. Suspendisse rutrum tincidunt lectus vel maximus. Etiam scelerisque pharetra nibh at vestibulum. Ut eget quam at urna finibus lacinia. Nulla non metus efficitur, elementum lectus at, tempus dui. Donec quis efficitur sem.
+
+ga

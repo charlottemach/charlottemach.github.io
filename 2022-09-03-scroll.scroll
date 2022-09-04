@@ -2,6 +2,7 @@ title Migrating to Scroll
 date 2022-09-03
 import settings.scroll
 import markups.scroll
+import ga.scroll
 groups index
 keyboardNav
 
@@ -34,7 +35,7 @@ aftertext
  For the previous markdown in my posts I just added the markups.scroll to avoid too much rewriting.
  link https://github.com/breck7/scroll/blob/main/public/blog/markups.scroll markups.scroll
 paragraph
- There are a few features that go away with the switch, namely analytics and tagged pages.
+ There are a few features that go away with the switch, namely analytics and tagged pages. Though tagging seems to be replaceable with categories and I might have found a way to add the javascript to each page.
 
 section Running locally
 markdown
@@ -46,3 +47,7 @@ section Before & Now
 paragraph
  Comparing the previous design
 image assets/images/screenshot_old.png
+paragraph
+ to the current
+image assets/images/screenshot_new.png
+ga

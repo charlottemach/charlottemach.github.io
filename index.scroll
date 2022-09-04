@@ -1,2 +1,5 @@
 import settings.scroll
+import ga.scroll
 template snippets index
+
+ga

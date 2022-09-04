@@ -10,3 +10,5 @@ I wrote a blog post at a previous company:
 
 groups index
 import settings.scroll
+import ga.scroll
+ga
