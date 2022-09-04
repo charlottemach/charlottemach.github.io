@@ -1,0 +1,218 @@
+<!doctype html>
+<!--
+
+ This page was compiled by 📜 Scroll, a public domain
+ programming language and static site publishing tool.
+ 
+ https://scroll.pub
+ 
+ Generally you don't want to edit it by hand.
+
+ Scroll v31.4.1
+
+-->
+<html lang="en-US">
+ <head>
+  <meta charset="utf-8"></meta>
+  <title>Cross-Account Roles in AWS via Terraform - Cookies & Containers</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"></meta>
+  <meta name="description" content="Or how I learned to love the cloud."></meta>
+  <meta name="generator" content="Scroll v31.4.1"></meta>
+  <meta property="og:title" content="Cross-Account Roles in AWS via Terraform"></meta>
+  <meta property="og:description" content="April 7, 2020 — Stuck on creating cross-account AWS IAM roles via terraform?  Most companies these days use multiple cloud accounts to separate resources, customers, or even internal departments. With multiple AWS accounts, it’s practical to rely on a so-called bastion account for Identity and Acces"></meta>
+  <meta property="og:image" content="https://charlottemach.com/assets/images/awsroles2.png"></meta>
+  <link rel="alternate" type="application/rss+xml" title="Cookies & Containers" href="feed.xml"></link>
+  <meta name="twitter:card" content="summary_large_image"></meta>
+  <link rel="stylesheet" type="text/css" href="scrollStyle.css"></link>
+</head>
+ <body>
+  <div class="scrollHeaderComponent">
+   <div class="scrollTopRightBarComponent">
+    <div class="scrollSocialMediaIconsComponent">
+     <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+</div>
+   <h2 class="scrollNameComponent">
+    <a href="index.html">Cookies & Containers</a>
+</h2>
+   <div>Or how I learned to love the cloud.</div>
+</div>
+  <h1 class="scrollFilePageTitle">
+   <a href="cross-account-roles-aws-terraform.html">Cross-Account Roles in AWS via Terraform</a>
+</h1>
+  <div class="scrollFilePageComponent" style=""><h1 class="scrollTitleComponent"><a href="cross-account-roles-aws-terraform.html">Cross-Account Roles in AWS via Terraform</a></h1>
+
+
+
+<p class="scrollParagraphComponent"><span class="scrollDateComponent">April 7, 2020 — </span>Stuck on creating cross-account AWS IAM roles via terraform? 
+Most companies these days use multiple cloud accounts to separate resources, customers, or even internal departments. With multiple AWS accounts, it’s practical to rely on a so-called bastion account for Identity and Access Management (IAM) users. It serves as one central place for users, S3 buckets, and other shared resources.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="scrollKeyboardNav"><a href="2020-05-17-co2-sensor-raspi.html">2020-05-17-co2-sensor-raspi.html</a> · cross-account-roles-aws-terraform.html · <a href="2019-10-04-going-cloudnative.html">2019-10-04-going-cloudnative.html</a><script>document.addEventListener('keydown', function(event) {
+  if (document.activeElement !== document.body) return
+  const getLinks = () => document.getElementsByClassName("scrollKeyboardNav")[0].getElementsByTagName("a")
+  if (event.key === "ArrowLeft")
+    getLinks()[0].click()
+  else if (event.key === "ArrowRight")
+    getLinks()[1].click()
+ });</script></div>
+
+<p class="scrollParagraphComponent">If you are not using AWS Organizations, you can follow the best practices guide for multi-account setups <a href=https://gruntwork.io/guides/foundations/how-to-configure-production-grade-aws-account-structure/#production_grade_design>here</a>.</p>
+
+<p class="scrollParagraphComponent">While you could also just replicate your users across those other accounts, the simplest and cleanest way to access any resources there is to use AWS roles. Roles enable users and AWS services to access other AWS accounts without having to create a user in those accounts first. This post shows how to set up access to resources in another account via Terraform. </p>
+
+<h3 class="scrollSectionComponent">Gaining Trust</h3>
+
+<p class="scrollParagraphComponent">The way roles work is by using a web service called AWS Security Token Service (STS) to request temporary credentials for IAM, which are then used to identify you as that role. A user can request access to a role, which will grant that user that role’s temporary privileges.</p>
+
+<p class="scrollParagraphComponent">For that to be secure, there needs to be a trust established between the account or user and the role. It is possible to set up a role without restrictions that anyone can use, but that's very insecure and not recommended.</p>
+
+<p class="scrollParagraphComponent">Trust works by defining a policy to make that role assumable by only certain users, as well as a policy to allow only certain users to assume that role, taking care of permissions in both accounts. This might seem like doing the same thing twice, but you’re actually establishing the trust from both sides by setting those two policies.</p>
+
+<figure class="scrollImageComponent"><a href="assets/images/awsroles1.png" target="_blank"><img src="assets/images/awsroles1.png" width="878" height="426" loading="lazy"/></a></figure>
+
+<h3 class="scrollSectionComponent">Setting Up the Role</h3>
+
+<p class="scrollParagraphComponent">In this example, we’re setting up a user in an AWS account we’ll call <i>utils</i>:</p>
+<code class="scrollCodeBlockComponent">resource "aws_iam_user" "random" {
+  name = "random_user"
+  tags = {
+    name = "random"
+  }
+}</code>
+
+<p class="scrollParagraphComponent">We’re giving it the right to assume a specific role in another account.</p>
+
+<code class="scrollCodeBlockComponent">resource "aws_iam_policy" "prod_s3" {
+  name        = "prod_s3"
+  description = "allow assuming prod_s3 role"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "sts:AssumeRole",
+        Resource = "arn:aws:iam::${data.aws_caller_identity.prod.account_id}:role/${aws_iam_role.prod_list_s3.name}"
+    }]
+  })
+}
+ 
+resource "aws_iam_user_policy_attachment" "prod_s3" {
+  user       = aws_iam_user.random.name
+  policy_arn = aws_iam_policy.prod_s3.arn
+}</code>
+
+<p class="scrollParagraphComponent">Since we’re using the same Terraform for two AWS accounts, we’re defining a second provider, which is then used to make sure the next resources get created in the second account instead of the first.</p>
+
+<code class="scrollCodeBlockComponent">provider "aws" {
+  version = "~> 2.49"
+  profile = "utils"
+  region  = var.region_utils
+}
+provider "aws" {
+  version = "~> 2.49"
+  profile = "prod"
+  region  = var.region_prod
+  alias   = "prod"
+}</code>
+
+<p class="scrollParagraphComponent">In the second account (let’s call it <i>prod</i>), we’re creating a role with a policy to allow that role to be assumed from the <i>utils</i> account.</p>
+
+<code class="scrollCodeBlockComponent">resource "aws_iam_role" "prod_list_s3" {
+  name = "s3-list-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect    = "Allow",
+        Action    = "sts:AssumeRole",
+        Principal = { "AWS" : "arn:aws:iam::${data.aws_caller_identity.utils.account_id}:root" }
+    }]
+  })
+  provider = aws.prod
+}</code>
+
+<p class="scrollParagraphComponent">We are also adding a policy to grant the newly created role some permissions in the prod account. In this case, we’re only letting it list a few S3 buckets.</p>
+
+<p class="scrollParagraphComponent">We create a JSON file for the S3 permissions, called “role_permissions_policy.json”. Those could be done inline like the other policies, but having them separate makes the Terraform files easier to read —especially with longer statements.</p>
+
+<code class="scrollCodeBlockComponent">{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "s3:ListAllMyBuckets",
+            "Resource": "*"
+        }
+    ]
+}</code>
+
+<p class="scrollParagraphComponent">Back in the Terraform files we attach that policy (by referring to the JSON file) to the role we created before.</p>
+
+<code class="scrollCodeBlockComponent">resource "aws_iam_policy" "s3_list_all" {
+  name        = "s3_list_all"
+  description = "allows listing all s3 buckets"
+  policy      = file("role_permissions_policy.json")
+ 
+  provider = aws.prod
+}
+ 
+resource "aws_iam_policy_attachment" "s3_list_all" {
+  name       = "list s3 buckets policy to role"
+  roles      = ["${aws_iam_role.prod_list_s3.name}"]
+  policy_arn = aws_iam_policy.s3_list_all.arn
+  provider   = aws.prod
+}</code>
+
+<p class="scrollParagraphComponent">The complete files can also be found in <a href=https://github.com/charlottemach/cross-account-aws-iam-roles>this repository</a>.</p>
+<p class="scrollParagraphComponent">Now apply those Terraform files by running terraform init and then terraform apply. </p>
+
+<h3 class="scrollSectionComponent">Assuming the Role</h3>
+
+<figure class="scrollImageComponent"><a href="assets/images/awsroles2.png" target="_blank"><img src="assets/images/awsroles2.png" width="1198" height="538" loading="lazy"/></a></figure>
+
+<p class="scrollParagraphComponent">If you want to use the newly created user, add a password to it and login as that user into the utils account.
+Try out the role to access the S3 buckets in prod by following the steps in the <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-console.html">documentation</a>.</p>
+
+<h4 class="scrollSubsectionComponent">Alternatively use the AWS CLI</h4>
+
+<p class="scrollParagraphComponent">Get the role ARN.</p>
+<code class="scrollCodeBlockComponent">aws iam list-roles --query "Roles[?RoleName == 's3-list-role'].[RoleName, Arn]"</code>
+<p class="scrollParagraphComponent">Request STS from AWS using the role ARN and a session name of your choosing.</p>
+<code class="scrollCodeBlockComponent">aws sts assume-role --role-arn "&lt;role_arn>" --role-session-name "&lt;name>"</code>
+<p class="scrollParagraphComponent">User gets temporary credentials, export these as environment variables.</p>
+<code class="scrollCodeBlockComponent">export AWS_ACCESS_KEY_ID=ExampleAccessKeyID
+export AWS_SECRET_ACCESS_KEY=ExampleSecretKey
+export AWS_SESSION_TOKEN=ExampleSessionToken</code>
+<p class="scrollParagraphComponent">Access S3 using the temp credentials.</p>
+<code class="scrollCodeBlockComponent">aws s3api list-buckets</code>
+
+<p class="scrollParagraphComponent">Ta-da! We can now login into our utils account, assume the role, and look at the prod S3 buckets.
+Of course this is a fairly simple example, but roles are also immensely useful for granting temporary access or allowing users to switch between different accounts and permission levels quickly. Admins can check user permissions without logging in and out, developers can access different accounts without changing users, and pipelines can function across AWS accounts without multiple sets of access keys.</p>
+
+<h3 class="scrollSectionComponent">Notes</h3>
+
+<p class="scrollParagraphComponent">Blog originally published on <a href=https://blog.container-solutions.com/how-to-create-cross-account-user-roles-for-aws-with-terraform>https://blog.container-solutions.com/how-to-create-cross-account-user-roles-for-aws-with-terraform</a></p>
+<p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2020-04-07-cross-account-roles-aws.scroll">View source</a></p></div>
+  <div class="scrollFooterComponent">
+   <div class="scrollSocialMediaIconsComponent">
+    <a href="mailto:charlotte.mach@fs.lmu.de"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Gmail icon</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg></a>
+    <a href="https://twitter.com/tinydata42"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Twitter icon</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+    <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+   <a href="https://scroll.pub" class="scrollCommunityLinkComponent">Built with Scroll v31.4.1</a>
+</div>
+</body>
+</html>

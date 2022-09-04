@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<rss version="0.91">
+<channel>
+ <title>Cookies & Containers</title>
+ <link>https://charlottemach.com</link>
+ <description>Or how I learned to love the cloud.</description>
+ <language>en-us</language>
+ <item>
+  <title>About</title>
+  <link>https://charlottemach.comabout.html</link>
+ </item>
+ <item>
+  <title>Migrating to Scroll</title>
+  <link>https://charlottemach.com2022-09-03-scroll.html</link>
+ </item>
+ <item>
+  <title>Tracing with Jaeger on EKS with Istio</title>
+  <link>https://charlottemach.com2022-04-13-jaeger-eks.html</link>
+ </item>
+ <item>
+  <title>Trying out Chaos Engineering using Litmus</title>
+  <link>https://charlottemach.com2022-01-06-trying-litmus.html</link>
+ </item>
+ <item>
+  <title>Using AWS Lambda to write from S3 to DynamoDB</title>
+  <link>https://charlottemach.com2021-12-16-lambda-s3-dynamo.html</link>
+ </item>
+ <item>
+  <title>Containerizing a simple Flask App</title>
+  <link>https://charlottemach.com2021-11-29-simple-flask-docker-app.html</link>
+ </item>
+ <item>
+  <title>Adding a secondary fluentd to Openshift Logging as a syslog receiver</title>
+  <link>https://charlottemach.com2021-11-17-syslog-fluentd.html</link>
+ </item>
+ <item>
+  <title>Running PowerDNS in docker-compose</title>
+  <link>https://charlottemach.com2021-09-08-powerdns.html</link>
+ </item>
+ <item>
+  <title>What the heck are DHCP relays?</title>
+  <link>https://charlottemach.com2021-05-03-dhcp-relays.html</link>
+ </item>
+ <item>
+  <title>WTF is Inter-Process Communication</title>
+  <link>https://charlottemach.com2021-04-01-ipc.html</link>
+ </item>
+ <item>
+  <title>Getting started with OpenStack</title>
+  <link>https://charlottemach.com2021-03-17-quick-openstack.html</link>
+ </item>
+ <item>
+  <title>Running a Windows VM on KubeVirt on K3s</title>
+  <link>https://charlottemach.com2020-11-03-windows-kubevirt-k3s.html</link>
+ </item>
+ <item>
+  <title>Writing a simple K8s Operator in Java</title>
+  <link>https://charlottemach.com2020-08-31-simple-k8s-operator-java.html</link>
+ </item>
+ <item>
+  <title>Adventures in Telco I: Setting up a Kubernetes Deployment using XOS</title>
+  <link>https://charlottemach.com2020-06-25-adventures-telco-xos.html</link>
+ </item>
+ <item>
+  <title>Bring Your Own Prometheus to Istio</title>
+  <link>https://charlottemach.com2020-06-12-byo-prometheus.html</link>
+ </item>
+ <item>
+  <title>Setting up an MH-Z14A CO2 sensor with Raspberry Pi</title>
+  <link>https://charlottemach.com2020-05-17-co2-sensor-raspi.html</link>
+ </item>
+ <item>
+  <title>Cross-Account Roles in AWS via Terraform</title>
+  <link>https://charlottemach.comcross-account-roles-aws-terraform.html</link>
+ </item>
+ <item>
+  <title>Going Cloud Native</title>
+  <link>https://charlottemach.com2019-10-04-going-cloudnative.html</link>
+ </item>
+ <item>
+  <title>Unavoidable Hello World</title>
+  <link>https://charlottemach.com2019-09-10-hello-world.html</link>
+ </item>
+</channel>
+</rss>

@@ -1,0 +1,16 @@
+import settings.scroll
+import ga.scroll
+groups index
+title About
+date 9999-99-99 
+
+
+list
+ - debugger of many clouds
+ - somewhat German
+ - likes cookies and containers
+ - currently helping people with cloud and other fun tech
+ - sometimes giving <a href=talks.html>talks</a>
+
+ga
+ test

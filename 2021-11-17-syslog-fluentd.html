@@ -1,0 +1,230 @@
+<!doctype html>
+<!--
+
+ This page was compiled by 📜 Scroll, a public domain
+ programming language and static site publishing tool.
+ 
+ https://scroll.pub
+ 
+ Generally you don't want to edit it by hand.
+
+ Scroll v31.4.1
+
+-->
+<html lang="en-US">
+ <head>
+  <meta charset="utf-8"></meta>
+  <title>Adding a secondary fluentd to Openshift Logging as a syslog receiver - Cookies & Containers</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"></meta>
+  <meta name="description" content="Or how I learned to love the cloud."></meta>
+  <meta name="generator" content="Scroll v31.4.1"></meta>
+  <meta property="og:title" content="Adding a secondary fluentd to Openshift Logging as a syslog receiver"></meta>
+  <meta property="og:description" content="November 17, 2021 — OpenShift comes with loads of handy operators managing various Kubernetes resources for you, some open source, some not."></meta>
+  <meta property="og:image" content=""></meta>
+  <link rel="alternate" type="application/rss+xml" title="Cookies & Containers" href="feed.xml"></link>
+  <meta name="twitter:card" content="summary_large_image"></meta>
+  <link rel="stylesheet" type="text/css" href="scrollStyle.css"></link>
+</head>
+ <body>
+  <div class="scrollHeaderComponent">
+   <div class="scrollTopRightBarComponent">
+    <div class="scrollSocialMediaIconsComponent">
+     <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+</div>
+   <h2 class="scrollNameComponent">
+    <a href="index.html">Cookies & Containers</a>
+</h2>
+   <div>Or how I learned to love the cloud.</div>
+</div>
+  <h1 class="scrollFilePageTitle">
+   <a href="2021-11-17-syslog-fluentd.html">Adding a secondary fluentd to Openshift Logging as a syslog receiver</a>
+</h1>
+  <div class="scrollFilePageComponent" style=""><h1 class="scrollTitleComponent"><a href="2021-11-17-syslog-fluentd.html">Adding a secondary fluentd to Openshift Logging as a syslog receiver</a></h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="scrollKeyboardNav"><a href="2021-11-29-simple-flask-docker-app.html">2021-11-29-simple-flask-docker-app.html</a> · 2021-11-17-syslog-fluentd.html · <a href="2021-09-08-powerdns.html">2021-09-08-powerdns.html</a><script>document.addEventListener('keydown', function(event) {
+  if (document.activeElement !== document.body) return
+  const getLinks = () => document.getElementsByClassName("scrollKeyboardNav")[0].getElementsByTagName("a")
+  if (event.key === "ArrowLeft")
+    getLinks()[0].click()
+  else if (event.key === "ArrowRight")
+    getLinks()[1].click()
+ });</script></div>
+
+<p class="scrollParagraphComponent"><span class="scrollDateComponent">November 17, 2021 — </span>OpenShift comes with loads of handy operators managing various Kubernetes resources for you, some open source, some not.</p>
+[OpenShift Logging](https://github.com/openshift/cluster-logging-operator) is the wrapper for an EFK stack running on your cluster.
+Like with other operators you don't create your own daemonsets or deployments, instead you configure it with a CustomResource called [ClusterLogging](https://docs.openshift.com/container-platform/4.9/logging/cluster-logging.html).
+<p class="scrollParagraphComponent">So if you're thinking of using this Fluentd for anything other than logs from this cluster, you're pretty much out of luck.</p>
+
+<h4 class="scrollSubsectionComponent">Note</h4>
+<p class="scrollParagraphComponent">You can set everything to Unmanaged and change the configs, but that's not sustainable as you're basically disabling any operator actions. Also editing what's supposed to be an indented file represented as one long string is no fun.</p>
+
+<p class="scrollParagraphComponent">You can however piggyback on the resources deployed by the operator by adding a secondary Fluentd in the same namespace with some modifications.</p>
+
+We'll create a Fluentd that acts as a syslog receiver, though you could in theory add any input you like, see the list of [Fluentd input plugins](https://www.fluentd.org/plugins).
+<p class="scrollParagraphComponent">And we'll re-use the ElasticSearch and Kibana pods to visualize those logs.</p>
+
+<h3 class="scrollSectionComponent">Secondary Fluentd</h3>
+
+<p class="scrollParagraphComponent">Assuming the logging operator is installed and one instance of the EFK pods is up and running:</p>
+<h4 class="scrollSubsectionComponent">ConfigMap</h4>
+<p class="scrollParagraphComponent">Let's start with a ConfigMap, where we add the Fluentd config file receiving logs on (the pods) port 5140, and sending everything as is to the local ElasticSearch.
+The exact paths might vary, but can be taken from the primary Fluentd daemonset.</p>
+<code class="scrollCodeBlockComponent">---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+  namespace: openshift-logging
+data:
+  fluent.conf: |-
+    #syslog plugin
+    &lt;source>
+      @type udp
+      port 5140
+      bind 0.0.0.0
+      &lt;parse>
+        @type none
+      &lt;/parse>
+      tag system
+    &lt;/source>
+    &lt;match **>
+      @type copy
+      &lt;store>
+        @type elasticsearch
+        host elasticsearch.openshift-logging.svc
+        port 9200
+        logstash_format true
+        scheme https
+        ssl_version TLSv1_2
+        client_key '/var/run/ocp-collector/secrets/fluentd/tls.key'
+        client_cert '/var/run/ocp-collector/secrets/fluentd/tls.crt'
+        ca_file '/var/run/ocp-collector/secrets/fluentd/ca-bundle.crt'
+      &lt;/store>
+    &lt;/match></code>
+<p class="scrollParagraphComponent">There is a syslog input plugin as well, but that might need specific settings depending on the syslog message format.</p>
+<h4 class="scrollSubsectionComponent">Deployment</h4>
+<p class="scrollParagraphComponent">After the config, we can create our deployment (a daemonset might be more useful for you).</p>
+<code class="scrollCodeBlockComponent">---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: fluentd-syslog
+  name: fluentd-syslog
+  namespace: openshift-logging
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fluentd-syslog
+  template:
+    metadata:
+      labels:
+        app: fluentd-syslog
+    spec:
+      containers:
+      - image: quay.io/fluentd_elasticsearch/fluentd:v3.3.0
+        imagePullPolicy: IfNotPresent
+        name: fluentd
+        env:
+        - name: FLUENTD_ARGS
+          value: --no-supervisor
+        ports:
+        - containerPort: 24224
+          name: forward
+          protocol: TCP
+        - containerPort: 5140
+          name: syslog
+          protocol: TCP
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+          readOnly: false
+        - name: config
+          mountPath: /etc/fluent/config.d
+        - mountPath: /var/run/ocp-collector/secrets/fluentd
+          name: fluentd
+          readOnly: true
+        - mountPath: /etc/pki/ca-trust/extracted/pem/
+          name: fluentd-trusted-ca-bundle
+          readOnly: true
+      volumes:
+      - name: varlog
+        emptydir: {}
+      - configMap:
+          defaultMode: 420
+          name: fluentd-config
+        name: config
+      - name: fluentd
+        secret:
+          defaultMode: 420
+          secretName: fluentd
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: ca-bundle.crt
+            path: tls-ca-bundle.pem
+          name: fluentd-trusted-ca-bundle
+        name: fluentd-trusted-ca-bundle</code>
+<p class="scrollParagraphComponent">The only differences between this an a generic deployment are the additional mounted volumes for the certificates as well as an image that already contains the ElasticSearch plugin.</p>
+
+You can build your own image as well, see the README of the original [Fluentd image](https://hub.docker.com/r/fluent/fluentd/) for instructions.
+
+<h4 class="scrollSubsectionComponent">Service</h4>
+<p class="scrollParagraphComponent">After creating the deployment we only need to expose the port from inside the pod to the outside world. If you have a loadbalancer or ingress, use that. Otherwise a Nodeport works just as well.</p>
+<code class="scrollCodeBlockComponent">---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fluentd-syslog
+  namespace: openshift-logging
+  labels:
+    app: fluentd-syslog
+spec:
+  type: NodePort
+  ports:
+  - port: 5140
+    targetPort: 5140
+    nodePort: 30514
+    protocol: UDP
+  selector:
+    app: fluentd-syslog</code>
+<p class="scrollParagraphComponent"></p>
+<p class="scrollParagraphComponent">This service exposed the deployment on the nodes port 30514.</p>
+
+<h3 class="scrollSectionComponent">Testing</h3>
+<p class="scrollParagraphComponent">Now you can test the deployment by sending a message yourself, for example</p>
+<code class="scrollCodeBlockComponent">nc -w0 -u &lt;Node IP> 30514 &lt;&lt;&lt; "FAKE SYSLOG MESSAGE"</code>
+<p class="scrollParagraphComponent">After a few seconds the log should show up inside your Kibana.</p>
+<p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2021-11-17-syslog-fluentd.scroll">View source</a></p></div>
+  <div class="scrollFooterComponent">
+   <div class="scrollSocialMediaIconsComponent">
+    <a href="mailto:charlotte.mach@fs.lmu.de"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Gmail icon</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg></a>
+    <a href="https://twitter.com/tinydata42"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Twitter icon</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+    <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+   <a href="https://scroll.pub" class="scrollCommunityLinkComponent">Built with Scroll v31.4.1</a>
+</div>
+</body>
+</html>

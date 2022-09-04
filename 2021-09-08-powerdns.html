@@ -1,0 +1,166 @@
+<!doctype html>
+<!--
+
+ This page was compiled by 📜 Scroll, a public domain
+ programming language and static site publishing tool.
+ 
+ https://scroll.pub
+ 
+ Generally you don't want to edit it by hand.
+
+ Scroll v31.4.1
+
+-->
+<html lang="en-US">
+ <head>
+  <meta charset="utf-8"></meta>
+  <title>Running PowerDNS in docker-compose - Cookies & Containers</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"></meta>
+  <meta name="description" content="Or how I learned to love the cloud."></meta>
+  <meta name="generator" content="Scroll v31.4.1"></meta>
+  <meta property="og:title" content="Running PowerDNS in docker-compose"></meta>
+  <meta property="og:description" content="September 8, 2021 — PowerDNS is easily installed and run on most servers, whether you're using it as an authoritative server or a recursor. To better understand the difference, check out this blog."></meta>
+  <meta property="og:image" content=""></meta>
+  <link rel="alternate" type="application/rss+xml" title="Cookies & Containers" href="feed.xml"></link>
+  <meta name="twitter:card" content="summary_large_image"></meta>
+  <link rel="stylesheet" type="text/css" href="scrollStyle.css"></link>
+</head>
+ <body>
+  <div class="scrollHeaderComponent">
+   <div class="scrollTopRightBarComponent">
+    <div class="scrollSocialMediaIconsComponent">
+     <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+</div>
+   <h2 class="scrollNameComponent">
+    <a href="index.html">Cookies & Containers</a>
+</h2>
+   <div>Or how I learned to love the cloud.</div>
+</div>
+  <h1 class="scrollFilePageTitle">
+   <a href="2021-09-08-powerdns.html">Running PowerDNS in docker-compose</a>
+</h1>
+  <div class="scrollFilePageComponent" style=""><h1 class="scrollTitleComponent"><a href="2021-09-08-powerdns.html">Running PowerDNS in docker-compose</a></h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="scrollKeyboardNav"><a href="2021-11-17-syslog-fluentd.html">2021-11-17-syslog-fluentd.html</a> · 2021-09-08-powerdns.html · <a href="2021-05-03-dhcp-relays.html">2021-05-03-dhcp-relays.html</a><script>document.addEventListener('keydown', function(event) {
+  if (document.activeElement !== document.body) return
+  const getLinks = () => document.getElementsByClassName("scrollKeyboardNav")[0].getElementsByTagName("a")
+  if (event.key === "ArrowLeft")
+    getLinks()[0].click()
+  else if (event.key === "ArrowRight")
+    getLinks()[1].click()
+ });</script></div>
+
+<p class="scrollParagraphComponent"><span class="scrollDateComponent">September 8, 2021 — </span>PowerDNS is easily installed and run on most servers, whether you're using it as an authoritative server or a recursor. To better understand the difference, check out <a href="https://umbrella.cisco.com/blog/what-is-the-difference-between-authoritative-and-recursive-dns-nameservers">this blog</a>.</p>
+<p class="scrollParagraphComponent">Basically your authoritative server has the actual DNS info you're looking for or providing (usually an IP), and your recursive server is the one finding the path to the right server and caching any previously checked information.</p>
+
+
+
+<h3 class="scrollSectionComponent">Checking out PowerDNS</h3>
+<p class="scrollParagraphComponent">While most other nameservers combine recursive and authoritative functions, PowerDNS or pdns comes in two flavours (pdns-auth and pdns-recursor).</p>
+Trying it out by installing the binaries is easy enough with the [installation docs](https://doc.powerdns.com/authoritative/installation.html). The default comes with a bind backend, but in this example we're using sqlite3 instead.
+
+<p class="scrollParagraphComponent">So for the containerized version, all we need is a server with:</p>
+<ul class="scrollUnorderedListComponent">
+<li>docker</li>
+<li>docker-compose</li>
+<li>port 53 (and potentially 8081/8082 if you want to contact pdns via API) open</li>
+</ul>
+<p class="scrollParagraphComponent">We start with the docker-compose.yaml file:</p>
+<code class="scrollCodeBlockComponent"># based on https://github.com/PowerDNS/pdns
+---
+version: '2.0'
+services:
+  recursor:
+    image: powerdns/pdns-recursor-45:4.5.5 # the latest pdns-recursor from dockerhub
+    # the forward-zones are used to make sure the recursor asks the local authoritative server 
+    # about our own domains
+    command: --forward-zones=&lt;domain>=172.25.0.2:5300 --local-address=0.0.0.0 --local-port=53 
+    environment:
+      - PDNS_RECURSOR_API_KEY
+    ports:
+      - "53:53"
+      - "53:53/udp"
+      - "8082:8082" # HTTP API for the recursor
+
+  auth:
+    image: powerdns/pdns-auth-45:4.5.1 # latest pdns-authoritative nameserver image
+    command: --local-address=0.0.0.0 --local-port=5300
+    user: root
+    environment:
+      - PDNS_AUTH_API_KEY
+    ports:
+      - "5300:5300" # this is the port we redirect queries to above
+      - "5300:5300/udp"
+      - "8081:8081" # HTTP API of the server
+    volumes:
+      - /var/lib/powerdns/pdns.sqlite3:/var/lib/powerdns/pdns.sqlite3
+    networks:
+      default:
+        ipv4_address: 172.25.0.2
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        # defining the network range and IP for the authoritative server is only necessary in 
+        # specific cases (e.g. to avoid breaking networking on some servers, most do fine without)
+        - subnet: 172.25.0.0/16</code>
+
+<h3 class="scrollSectionComponent">Initializing the database </h3>
+
+<p class="scrollParagraphComponent">Before running pdns, the sqlite database needs to be created.</p>
+<code class="scrollCodeBlockComponent">mkdir /var/lib/powerdns
+sqlite3 -init schema.sql /var/lib/powerdns/pdns.sqlite3</code>
+Where schema.sql is taken from [here](https://doc.powerdns.com/authoritative/backends/generic-sqlite3.html). 
+
+<h3 class="scrollSectionComponent">Environment variables for API access</h3>
+<p class="scrollParagraphComponent">To enable the API access to pdns, make sure you have the following environment variables set:</p>
+<code class="scrollCodeBlockComponent">export PDNS_RECURSOR_API_KEY=changeme
+export PDNS_AUTH_API_KEY=changeme</code>
+
+Starting the containers is as simple as running `docker-compose up -d` in the folder where the above YAML file is.
+
+<h3 class="scrollSectionComponent">Testing</h3>
+Check if your containers are successfully running with `docker-compose ps -a`.
+If they're up, you can test the service using
+<code class="scrollCodeBlockComponent">curl -v -H 'X-API-Key: changeme' http://&lt;serverIP>:8081/api/v1/servers/localhost/ | jq</code>
+
+To add zones to the authoritative server you can use `pdnsutil` or the [API](https://doc.powerdns.com/authoritative/http-api/zone.html). 
+
+<p class="scrollParagraphComponent">To check if you've successfully added a zone or record, you can check with either</p>
+<code class="scrollCodeBlockComponent">nslookup &lt;domain> &lt;serverIP></code>
+<p class="scrollParagraphComponent">or </p>
+<code class="scrollCodeBlockComponent">dig &lt;domain> @serverIP</code>
+Adding a `--port 5300` to the dig command, let's you test the authoritative server directly. 
+<p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2021-09-08-powerdns.scroll">View source</a></p></div>
+  <div class="scrollFooterComponent">
+   <div class="scrollSocialMediaIconsComponent">
+    <a href="mailto:charlotte.mach@fs.lmu.de"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Gmail icon</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg></a>
+    <a href="https://twitter.com/tinydata42"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Twitter icon</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+    <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+   <a href="https://scroll.pub" class="scrollCommunityLinkComponent">Built with Scroll v31.4.1</a>
+</div>
+</body>
+</html>

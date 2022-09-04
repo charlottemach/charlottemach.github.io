@@ -1,0 +1,147 @@
+<!doctype html>
+<!--
+
+ This page was compiled by 📜 Scroll, a public domain
+ programming language and static site publishing tool.
+ 
+ https://scroll.pub
+ 
+ Generally you don't want to edit it by hand.
+
+ Scroll v31.4.1
+
+-->
+<html lang="en-US">
+ <head>
+  <meta charset="utf-8"></meta>
+  <title>Writing a simple K8s Operator in Java - Cookies & Containers</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"></meta>
+  <meta name="description" content="Or how I learned to love the cloud."></meta>
+  <meta name="generator" content="Scroll v31.4.1"></meta>
+  <meta property="og:title" content="Writing a simple K8s Operator in Java"></meta>
+  <meta property="og:description" content="August 31, 2020 — Kubernetes Operator are often used to simplify the usage of applications or software in and outside a K8s cluster. They allow you to extend K8s by adding custom controllers for custom resources, allowing for example simpler database upgrades, application maintenance and automated c"></meta>
+  <meta property="og:image" content=""></meta>
+  <link rel="alternate" type="application/rss+xml" title="Cookies & Containers" href="feed.xml"></link>
+  <meta name="twitter:card" content="summary_large_image"></meta>
+  <link rel="stylesheet" type="text/css" href="scrollStyle.css"></link>
+</head>
+ <body>
+  <div class="scrollHeaderComponent">
+   <div class="scrollTopRightBarComponent">
+    <div class="scrollSocialMediaIconsComponent">
+     <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+</div>
+   <h2 class="scrollNameComponent">
+    <a href="index.html">Cookies & Containers</a>
+</h2>
+   <div>Or how I learned to love the cloud.</div>
+</div>
+  <h1 class="scrollFilePageTitle">
+   <a href="2020-08-31-simple-k8s-operator-java.html">Writing a simple K8s Operator in Java</a>
+</h1>
+  <div class="scrollFilePageComponent" style=""><h1 class="scrollTitleComponent"><a href="2020-08-31-simple-k8s-operator-java.html">Writing a simple K8s Operator in Java</a></h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="scrollKeyboardNav"><a href="2020-11-03-windows-kubevirt-k3s.html">2020-11-03-windows-kubevirt-k3s.html</a> · 2020-08-31-simple-k8s-operator-java.html · <a href="2020-06-25-adventures-telco-xos.html">2020-06-25-adventures-telco-xos.html</a><script>document.addEventListener('keydown', function(event) {
+  if (document.activeElement !== document.body) return
+  const getLinks = () => document.getElementsByClassName("scrollKeyboardNav")[0].getElementsByTagName("a")
+  if (event.key === "ArrowLeft")
+    getLinks()[0].click()
+  else if (event.key === "ArrowRight")
+    getLinks()[1].click()
+ });</script></div>
+
+<p class="scrollParagraphComponent"><span class="scrollDateComponent">August 31, 2020 — </span>Kubernetes Operator are often used to simplify the usage of applications or software in and outside a K8s cluster. They allow you to extend K8s by adding custom controllers for custom resources, allowing for example simpler database upgrades, application maintenance and automated creation of K8s resources.</p>
+
+<p class="scrollParagraphComponent"></p>
+
+There is a large number of Operators readily availabe, from [OperatorHub](https://operatorhub.io/) or [GitHub](https://github.com/operator-framework/awesome-operators).
+
+<h3 class="scrollSectionComponent">Why write your own?</h3>
+
+<p class="scrollParagraphComponent">You might be providing an application that needs certain maintenance that you want to automate. You might be providing a database to your developers that you don't want them to have to provision themselves. You might just wanna learn more about Kubernetes.</p>
+
+
+<h3 class="scrollSectionComponent">Getting started</h3>
+
+<ul class="scrollUnorderedListComponent">
+<li>Create a simple Java application in your favourite IDE (e.g. <a href=https://www.jetbrains.com/help/idea/creating-and-running-your-first-java-application.html>this how-to for IntelliJ</a>).</li>
+<li>Add Maven support (<a href=https://www.jetbrains.com/help/idea/convert-a-regular-project-into-a-maven-project.html#develop_with_maven>beginner's guide</a>).</li>
+<li>Add the Maven dependency for the <a href=https://github.com/ContainerSolutions/java-operator-sdk/blob/master/README.md>java-operator-sdk</a>.</li>
+</ul>
+
+<code class="scrollCodeBlockComponent">   &lt;dependency>
+     &lt;groupId>com.github.containersolutions&lt;/groupId>
+     &lt;artifactId>operator-framework&lt;/artifactId>
+     &lt;version>{see https://search.maven.org/search?q=a:operator-framework for latest version}&lt;/version>
+   &lt;/dependency></code>
+
+<ul class="scrollUnorderedListComponent">
+<li>Create a CRD.yaml for your application (<a href=https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/crd/crd.yaml>example</a>).</li>
+<li>Create a Controller class with two methods (<code>deleteResource</code> and <code>createOrUpdateResource</code>). This is the code being run when the Kubernetes API Server sends events about your custom resource.</li>
+<li>Create a POJO representation for your CRD, <a href=https://github.com/ContainerSolutions/java-operator-sdk/tree/master/samples/webserver/src/main/java/com/github/containersolutions/operator/sample>see samples with spec and status here</a>.</li>
+<li>Register your controller in your main class. </li>
+</ul>
+<code class="scrollCodeBlockComponent">public class YourOperator {
+
+   public static void main(String[] args) {
+       Operator operator = new Operator(new DefaultKubernetesClient());
+       operator.registerController(new YourController());
+   }
+}</code>
+<ul class="scrollUnorderedListComponent">
+<li>Before running your code, make sure your local <code>kubectl</code> points to a cluster, for example if <code>kubectl version</code> gives no errors. If not check how to <a href=https://kubernetes.io/docs/tasks/tools/install-kubectl/>set it up</a>.</li>
+<li>Package your code into a jar (<a href=https://www.jetbrains.com/help/idea/creating-and-running-your-first-java-application.html#package>beginner's guide</a>).</li>
+<li>Create a Dockerfile for your Operator (<a href=https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/Dockerfile>beginner's guide</a>).</li>
+</ul>
+
+<code class="scrollCodeBlockComponent">FROM openjdk:12-alpine
+
+ARG JAR_FILE
+ADD target/${JAR_FILE} /usr/share/operator/your-operator.jar
+
+ENTRYPOINT ["java", "-jar", "/usr/share/operator/your-operator.jar"]</code>
+
+<ul class="scrollUnorderedListComponent">
+<li>Create your CRD and deploy your Operator to the cluster (<a href=https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/k8s/deployment.yaml>example for deployment YAML</a>).</li>
+</ul>
+<code class="scrollCodeBlockComponent">kubectl apply -f CRD.yaml
+kubectl apply -f deployment.yaml</code>
+<ul class="scrollUnorderedListComponent">
+<li>Create your CustomResource, matching your CRD and watch how the Operator reacts to the creation of the CustomResource!</li>
+</ul>
+
+<h3 class="scrollSectionComponent">Further reading</h3>
+
+1. [Operator Pattern: https://kubernetes.io/docs/concepts/extend-kubernetes/operator/](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
+2. [More on CustomResources: https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/)
+<p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2020-08-31-simple-k8s-operator-java.scroll">View source</a></p></div>
+  <div class="scrollFooterComponent">
+   <div class="scrollSocialMediaIconsComponent">
+    <a href="mailto:charlotte.mach@fs.lmu.de"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Gmail icon</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg></a>
+    <a href="https://twitter.com/tinydata42"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Twitter icon</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+    <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+   <a href="https://scroll.pub" class="scrollCommunityLinkComponent">Built with Scroll v31.4.1</a>
+</div>
+</body>
+</html>

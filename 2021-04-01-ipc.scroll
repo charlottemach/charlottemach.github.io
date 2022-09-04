@@ -1,0 +1,12 @@
+title WTF is Inter-Process Communication
+date 2021-04-01
+import settings.scroll
+import markups.scroll
+groups index
+keyboardNav
+
+aftertext
+ dateline
+ A colleague and I wrote this short overview over different IPC mechanisms and when to use what in your microservices architecture. It covers REST, GraphQL, gRPC and RabbitMQ and compares them based on different criteria.
+markdown
+ <a href="https://blog.container-solutions.com/wtf-is-inter-process-communication">Link to post on CS blog.</a>

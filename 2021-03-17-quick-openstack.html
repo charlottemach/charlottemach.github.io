@@ -1,0 +1,171 @@
+<!doctype html>
+<!--
+
+ This page was compiled by 📜 Scroll, a public domain
+ programming language and static site publishing tool.
+ 
+ https://scroll.pub
+ 
+ Generally you don't want to edit it by hand.
+
+ Scroll v31.4.1
+
+-->
+<html lang="en-US">
+ <head>
+  <meta charset="utf-8"></meta>
+  <title>Getting started with OpenStack - Cookies & Containers</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"></meta>
+  <meta name="description" content="Or how I learned to love the cloud."></meta>
+  <meta name="generator" content="Scroll v31.4.1"></meta>
+  <meta property="og:title" content="Getting started with OpenStack"></meta>
+  <meta property="og:description" content="March 17, 2021 — The fastest way I found (after reading on components, which gazillions of parts there are and which you probably won't need) was to just run DevStack."></meta>
+  <meta property="og:image" content=""></meta>
+  <link rel="alternate" type="application/rss+xml" title="Cookies & Containers" href="feed.xml"></link>
+  <meta name="twitter:card" content="summary_large_image"></meta>
+  <link rel="stylesheet" type="text/css" href="scrollStyle.css"></link>
+</head>
+ <body>
+  <div class="scrollHeaderComponent">
+   <div class="scrollTopRightBarComponent">
+    <div class="scrollSocialMediaIconsComponent">
+     <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+</div>
+   <h2 class="scrollNameComponent">
+    <a href="index.html">Cookies & Containers</a>
+</h2>
+   <div>Or how I learned to love the cloud.</div>
+</div>
+  <h1 class="scrollFilePageTitle">
+   <a href="2021-03-17-quick-openstack.html">Getting started with OpenStack</a>
+</h1>
+  <div class="scrollFilePageComponent" style=""><h1 class="scrollTitleComponent"><a href="2021-03-17-quick-openstack.html">Getting started with OpenStack</a></h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="scrollKeyboardNav"><a href="2021-04-01-ipc.html">2021-04-01-ipc.html</a> · 2021-03-17-quick-openstack.html · <a href="2020-11-03-windows-kubevirt-k3s.html">2020-11-03-windows-kubevirt-k3s.html</a><script>document.addEventListener('keydown', function(event) {
+  if (document.activeElement !== document.body) return
+  const getLinks = () => document.getElementsByClassName("scrollKeyboardNav")[0].getElementsByTagName("a")
+  if (event.key === "ArrowLeft")
+    getLinks()[0].click()
+  else if (event.key === "ArrowRight")
+    getLinks()[1].click()
+ });</script></div>
+
+
+<p class="scrollParagraphComponent"><span class="scrollDateComponent">March 17, 2021 — </span>The fastest way I found (after reading on components, which gazillions of parts there are and which you probably won't need) was to just run <a href="https://docs.openstack.org/devstack/latest/#">DevStack</a>.</p>
+
+<h4 class="scrollSubsectionComponent">Note</h4>
+<p class="scrollParagraphComponent">DevStack is not for production and makes A LOT of changes to your system, so install it on a dedicated machine!</p>
+
+<h3 class="scrollSectionComponent">Installing OpenStack</h3>
+The install for Ubuntu 18.04 I followed can be found [here](https://docs.openstack.org/devstack/latest/#). 
+First add a dedicated user (or just use *ubuntu*). The following are run as *root*, but can also be done with *sudo*.
+<code class="scrollCodeBlockComponent"># useradd -s /bin/bash -d /opt/stack -m stack
+# echo "stack ALL=(ALL) NOPASSWD: ALL" | tee /etc/sudoers.d/stack
+# su - stack</code>
+<p class="scrollParagraphComponent">Download DevStack:</p>
+<code class="scrollCodeBlockComponent">$ git clone https://opendev.org/openstack/devstack
+$ cd devstack</code>
+<p class="scrollParagraphComponent">Create a config file. I added Heat and Ceilometer, but you might do just fine with the first five lines.</p>
+<code class="scrollCodeBlockComponent">$ cat &lt;&lt;EOF > local.conf
+[[local|localrc]]
+ADMIN_PASSWORD=YourSuperSecretPassword
+DATABASE_PASSWORD=$ADMIN_PASSWORD
+RABBIT_PASSWORD=$ADMIN_PASSWORD
+SERVICE_PASSWORD=$ADMIN_PASSWORD
+
+#Enable heat services
+enable_service h-eng h-api h-api-cfn h-api-cw
+
+CEILOMETER_BACKEND=gnocchi
+enable_plugin ceilometer https://opendev.org/openstack/ceilometer
+enable_plugin aodh https://opendev.org/openstack/aodh
+EOF</code>
+<p class="scrollParagraphComponent">After that just run</p>
+<code class="scrollCodeBlockComponent">$ ./stack.sh</code>
+and then the install will kick off. This will take a few minutes.
+If you run into any errors like `ERROR: Cannot uninstall 'wrapt'. during upgrade` make sure the version you need is installed.
+For me it was fixed with `pip install --ignore-installed  wrapt==1.12.1 simplejson==3.17.2`.
+
+<p class="scrollParagraphComponent">After the install you should have access to keystone, glance, nova, placement, cinder, neutron, horizon and also ceilometer and heat if you used my local.conf.
+Try pointing a browser to the IP of the Ubuntu machine, it should give you the OpenStack interface where you can login as *admin* with the password defined in your config file.</p>
+
+<h4 class="scrollSubsectionComponent">Commandline Access</h4>
+<p class="scrollParagraphComponent">To use the command line install the OpenStack client locally</p>
+<code class="scrollCodeBlockComponent">$ pip install python-openstackclient</code>
+<p class="scrollParagraphComponent">and then create an openrc file:</p>
+<code class="scrollCodeBlockComponent">export OS_PROJECT_DOMAIN_NAME=default
+export OS_USER_DOMAIN_NAME=default
+export OS_PROJECT_NAME=admin
+export OS_USERNAME=admin
+export OS_PASSWORD=YourSuperSecretPassword
+export OS_AUTH_URL=http://&lt;ServerIP>/identity
+export OS_IDENTITY_API_VERSION=3
+export OS_IMAGE_API_VERSION=2</code>
+and don't forget to `source openrc`.
+Try it with e.g.
+<code class="scrollCodeBlockComponent">$ openstack user list</code>
+
+<h3 class="scrollSectionComponent">Creating your first VM</h3>
+
+<p class="scrollParagraphComponent">Start of by either importing a public key or creating a keypair in OpenStack.</p>
+<code class="scrollCodeBlockComponent">$ openstack keypair create --public-key ~/.ssh/yourkey.pub NEW_KEY_NAME</code>
+<p class="scrollParagraphComponent">Create a new security group to allow ping and SSH:</p>
+<code class="scrollCodeBlockComponent">$ openstack security group create ssh_icmp_access --description Allows ICMP and SSH access from anywhere
+$ openstack security group rule list ssh_icmp_access #Should return nothing
+$ openstack security group rule create ssh_icmp_access --protocol tcp --dst-port 22:22 --remote-ip 0.0.0.0/0
+$ openstack security group rule create --protocol icmp ssh_icmp_access</code>
+<p class="scrollParagraphComponent">Create a router with a public address:</p>
+<code class="scrollCodeBlockComponent">$ openstack router create router</code>
+<p class="scrollParagraphComponent">Get the public network ID (DevStack creates a public, private and shared network by default), the public-subnet ID and the router ID.</p>
+<code class="scrollCodeBlockComponent">$ openstack router list
+$ openstack network list
+$ openstack subnet list</code>
+<p class="scrollParagraphComponent">And then set up the router:</p>
+<code class="scrollCodeBlockComponent">$ openstack router set ROUTER_ID --external-gateway PUBLIC_NETWORK_ID
+$ openstack router add subnet ROUTER_ID PUBLIC_SUBNET_ID</code>
+Add an image after downloading it (for example [Debian](http://cdimage.debian.org/cdimage/openstack/current-9/)):
+<code class="scrollCodeBlockComponent">$ openstack image create --container-format bare --disk-format qcow2 \
+       --file debian-9-openstack-amd64.qcow2 debian-9-openstack-amd64</code>
+Launch an instance. The flavor is the machine size (e.g. **1** is 512MB RAM and 1vCPU, **3** is 4096MB RAM and 4vCPUs), the image ID can be checked with `openstack image list`.
+<code class="scrollCodeBlockComponent">$ openstack server create --flavor 3 --image IMAGE_ID --key-name NEW_KEY_NAME \
+  --security-group ssh_icmp_access DEBIAN_INSTANCE_NAME</code>
+<p class="scrollParagraphComponent">Connect the instance to the private network
+Assign floating IP to instance interface (make sure it’s the private network)</p>
+<code class="scrollCodeBlockComponent">$ openstack floating ip create public
+$ openstack server add floating ip DEBIAN_INSTANCE_NAME FLOATING_IP</code>
+<p class="scrollParagraphComponent">Now you should be able to SSH into that server with the private key and floating IP address, using the debian user</p>
+<code class="scrollCodeBlockComponent">$ ssh -i ~/.ssh/yourkey debian@FLOATING_IP</code>
+<h4 class="scrollSubsectionComponent">Notes</h4>
+For more info check out the [OpenStack docs](https://docs.openstack.org/ocata/user-guide/).
+<p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2021-03-17-quick-openstack.scroll">View source</a></p></div>
+  <div class="scrollFooterComponent">
+   <div class="scrollSocialMediaIconsComponent">
+    <a href="mailto:charlotte.mach@fs.lmu.de"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Gmail icon</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg></a>
+    <a href="https://twitter.com/tinydata42"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Twitter icon</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+    <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+   <a href="https://scroll.pub" class="scrollCommunityLinkComponent">Built with Scroll v31.4.1</a>
+</div>
+</body>
+</html>

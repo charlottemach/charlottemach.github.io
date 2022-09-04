@@ -1,0 +1,130 @@
+<!doctype html>
+<!--
+
+ This page was compiled by 📜 Scroll, a public domain
+ programming language and static site publishing tool.
+ 
+ https://scroll.pub
+ 
+ Generally you don't want to edit it by hand.
+
+ Scroll v31.4.1
+
+-->
+<html lang="en-US">
+ <head>
+  <meta charset="utf-8"></meta>
+  <title>Trying out Chaos Engineering using Litmus - Cookies & Containers</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"></meta>
+  <meta name="description" content="Or how I learned to love the cloud."></meta>
+  <meta name="generator" content="Scroll v31.4.1"></meta>
+  <meta property="og:title" content="Trying out Chaos Engineering using Litmus"></meta>
+  <meta property="og:description" content="January 6, 2022 — The idea of using Chaos Engineering to improve systems is becoming more and more popular with the Kubernetes crowd, no doubt due to Netflix's Simian Army and the experiences that followed. Simulating outages or different errors to test resilience, understanding your system better a"></meta>
+  <meta property="og:image" content=""></meta>
+  <link rel="alternate" type="application/rss+xml" title="Cookies & Containers" href="feed.xml"></link>
+  <meta name="twitter:card" content="summary_large_image"></meta>
+  <link rel="stylesheet" type="text/css" href="scrollStyle.css"></link>
+</head>
+ <body>
+  <div class="scrollHeaderComponent">
+   <div class="scrollTopRightBarComponent">
+    <div class="scrollSocialMediaIconsComponent">
+     <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+</div>
+   <h2 class="scrollNameComponent">
+    <a href="index.html">Cookies & Containers</a>
+</h2>
+   <div>Or how I learned to love the cloud.</div>
+</div>
+  <h1 class="scrollFilePageTitle">
+   <a href="2022-01-06-trying-litmus.html">Trying out Chaos Engineering using Litmus</a>
+</h1>
+  <div class="scrollFilePageComponent" style=""><h1 class="scrollTitleComponent"><a href="2022-01-06-trying-litmus.html">Trying out Chaos Engineering using Litmus</a></h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="scrollKeyboardNav"><a href="2022-04-13-jaeger-eks.html">2022-04-13-jaeger-eks.html</a> · 2022-01-06-trying-litmus.html · <a href="2021-12-16-lambda-s3-dynamo.html">2021-12-16-lambda-s3-dynamo.html</a><script>document.addEventListener('keydown', function(event) {
+  if (document.activeElement !== document.body) return
+  const getLinks = () => document.getElementsByClassName("scrollKeyboardNav")[0].getElementsByTagName("a")
+  if (event.key === "ArrowLeft")
+    getLinks()[0].click()
+  else if (event.key === "ArrowRight")
+    getLinks()[1].click()
+ });</script></div>
+
+<p class="scrollParagraphComponent"><span class="scrollDateComponent">January 6, 2022 — </span>The idea of using Chaos Engineering to improve systems is becoming more and more popular with the Kubernetes crowd, no doubt due to <a href="https://github.com/Netflix/SimianArmy">Netflix's Simian Army</a> and the experiences that followed.
+Simulating outages or different errors to test resilience, understanding your system better and battle-test your applications sounds like a good idea, here's one way of getting started.</p>
+
+<h3 class="scrollSectionComponent">Understand the basics</h3>
+
+<p class="scrollParagraphComponent">Chaos Engineering is NOT about breaking things randomly and seeing what happens. It's about making an assumption about your system, trying to understand what would happen if a certain error or outage happens and testing that assumption in a controlled environment. For real-life systems that involves a large amount of preparation, communication and learning from whatever results a chaos experiment may have.</p>
+
+
+
+If you're just getting started and want to play around and learn, [Litmus](https://docs.litmuschaos.io/) is an interesting tool to try on Kubernetes. It does open up some issues with staying in control of your experiment and doesn't really minimize the blast radius, but it is still fun to try out.
+
+<h3 class="scrollSectionComponent">Install</h3>
+<p class="scrollParagraphComponent">Litmus describes itself as an end-to-end chaos engineering platform for cloud native infra and applications. It's control plane comes as a Kubernetes deployment consisting of a frontend, a server and a MongoDB backend, all together called the Chaos Center.</p>
+
+<code class="scrollCodeBlockComponent">kubectl apply -f https://litmuschaos.github.io/litmus/2.4.0/litmus-2.4.0.yaml</code>
+The above command is all it takes to install it on a single cluster (see the [docs](https://docs.litmuschaos.io/docs/getting-started/installation/) for the latest version).
+
+Once the pods are up and running, you can access the frontend via `<IP>:<Nodeport>` which you can see in the service that gets created (in my case it's on a local cluster, so localhost:30711).
+<code class="scrollCodeBlockComponent">NAMESPACE     NAME                            TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                       AGE
+litmus        litmusportal-frontend-service   NodePort    10.98.60.168     &lt;none>        9091:30711/TCP                                                66s
+litmus        litmusportal-server-service     NodePort    10.109.185.162   &lt;none>        9002:32132/TCP,8000:30885/TCP,9003:31270/TCP,3030:31009/TCP   65s</code>
+
+<p class="scrollParagraphComponent">After logging in with the default credentials of user: admin and pw: litmus, you're prompted to change the password.</p>
+<p class="scrollParagraphComponent">In the Chaos Center you can create workflows, add different hubs (like experiment libraries), agents  or monitor experiment runs and results.</p>
+(The 9002 port on the server lets you access the internal [GraphQL playground](https://github.com/graphql/graphql-playground).)
+
+<h3 class="scrollSectionComponent">Concepts</h3>
+[This post](https://dev.to/litmus-chaos/how-litmus-orchestrates-chaos-3nnd) goes into more detail, but basically Litmus runs as an [operator](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/), using different CustomResources to define states and custom controllers to create Chaos Runners which execute the experiments as jobs.
+
+<h4 class="scrollSubsectionComponent">CRs</h4>
+<ul class="scrollUnorderedListComponent">
+
+</ul>
+<p class="scrollParagraphComponent">- Chaos Experiment: the actual test you want to run</p>
+<p class="scrollParagraphComponent">- Chaos Engine: the mapping of the test to the thing you want to test (infra/app)</p>
+<p class="scrollParagraphComponent">- Chaos Result: giving you the current state and outcome of a test</p>
+
+<p class="scrollParagraphComponent">A Chaos Workflow can be used to add additional steps around an experiment, for example to add preparation, cleanup or just to execute multiple operations.</p>
+
+<h3 class="scrollSectionComponent">Running a test</h3>
+
+<p class="scrollParagraphComponent">With Litmus up and running you now have different options</p>
+- [Run a sample workflow using the UI](https://docs.litmuschaos.io/docs/getting-started/run-your-first-workflow)
+- [Run a workflow from the ChaosHub](https://hub.litmuschaos.io/): The Hub contains different generic experiments like introducing network latency or node restarts, as well as application-specific experiments for a some cloud providers, Kafka, Cassandra.
+- Write your own (using [Python](https://github.com/litmuschaos/litmus-python) or [Golang](https://github.com/litmuschaos/litmus-go))
+
+For more resources, check out [awesome chaos engineering](https://github.com/dastergon/awesome-chaos-engineering) on GitHub.
+<p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2022-01-06-trying-litmus.scroll">View source</a></p></div>
+  <div class="scrollFooterComponent">
+   <div class="scrollSocialMediaIconsComponent">
+    <a href="mailto:charlotte.mach@fs.lmu.de"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Gmail icon</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg></a>
+    <a href="https://twitter.com/tinydata42"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Twitter icon</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+    <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+   <a href="https://scroll.pub" class="scrollCommunityLinkComponent">Built with Scroll v31.4.1</a>
+</div>
+</body>
+</html>

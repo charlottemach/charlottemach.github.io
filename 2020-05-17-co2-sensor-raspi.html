@@ -1,0 +1,205 @@
+<!doctype html>
+<!--
+
+ This page was compiled by 📜 Scroll, a public domain
+ programming language and static site publishing tool.
+ 
+ https://scroll.pub
+ 
+ Generally you don't want to edit it by hand.
+
+ Scroll v31.4.1
+
+-->
+<html lang="en-US">
+ <head>
+  <meta charset="utf-8"></meta>
+  <title>Setting up an MH-Z14A CO2 sensor with Raspberry Pi - Cookies & Containers</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"></meta>
+  <meta name="description" content="Or how I learned to love the cloud."></meta>
+  <meta name="generator" content="Scroll v31.4.1"></meta>
+  <meta property="og:title" content="Setting up an MH-Z14A CO2 sensor with Raspberry Pi"></meta>
+  <meta property="og:description" content="May 17, 2020 — After feeling tired for days (yay for the COVID-19 lockdown and being at home all day every day), I wanted to see if the indoor air was at fault. So I bought an MH-Z14A sensor to get CO2-levels at home, by attaching it to a Raspberry Pi 3."></meta>
+  <meta property="og:image" content="https://charlottemach.com/assets/images/sensor.jpg Pi and sensor"></meta>
+  <link rel="alternate" type="application/rss+xml" title="Cookies & Containers" href="feed.xml"></link>
+  <meta name="twitter:card" content="summary_large_image"></meta>
+  <link rel="stylesheet" type="text/css" href="scrollStyle.css"></link>
+</head>
+ <body>
+  <div class="scrollHeaderComponent">
+   <div class="scrollTopRightBarComponent">
+    <div class="scrollSocialMediaIconsComponent">
+     <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+</div>
+   <h2 class="scrollNameComponent">
+    <a href="index.html">Cookies & Containers</a>
+</h2>
+   <div>Or how I learned to love the cloud.</div>
+</div>
+  <h1 class="scrollFilePageTitle">
+   <a href="2020-05-17-co2-sensor-raspi.html">Setting up an MH-Z14A CO2 sensor with Raspberry Pi</a>
+</h1>
+  <div class="scrollFilePageComponent" style=""><h1 class="scrollTitleComponent"><a href="2020-05-17-co2-sensor-raspi.html">Setting up an MH-Z14A CO2 sensor with Raspberry Pi</a></h1>
+
+
+<p class="scrollParagraphComponent"><span class="scrollDateComponent">May 17, 2020 — </span>After feeling tired for days (yay for the COVID-19 lockdown and being at home all day every day), I wanted to see if the indoor air was at fault.
+So I bought an MH-Z14A sensor to get CO2-levels at home, by attaching it to a Raspberry Pi 3.</p>
+
+<p class="scrollParagraphComponent">Indoor CO2-levels have pretty large impact on sleep and concentration. Usually measured in ppm (parts per million), the desired values are below 1000ppm.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="scrollKeyboardNav"><a href="2020-06-12-byo-prometheus.html">2020-06-12-byo-prometheus.html</a> · 2020-05-17-co2-sensor-raspi.html · <a href="cross-account-roles-aws-terraform.html">cross-account-roles-aws-terraform.html</a><script>document.addEventListener('keydown', function(event) {
+  if (document.activeElement !== document.body) return
+  const getLinks = () => document.getElementsByClassName("scrollKeyboardNav")[0].getElementsByTagName("a")
+  if (event.key === "ArrowLeft")
+    getLinks()[0].click()
+  else if (event.key === "ArrowRight")
+    getLinks()[1].click()
+ });</script></div>
+
+<h3 class="scrollSectionComponent">CO2 levels and effects</h3>
+
+<p class="scrollParagraphComponent"> According to this <a href="https://www.kane.co.uk/knowledge-centre/what-are-safe-levels-of-co-and-co2-in-rooms">source</a> the following PPM levels correspond to certain effects.</p>
+
+ <table>
+ <thead>
+   <tr>
+     <th>PPM</th>
+     <th>Effects</th>
+   </tr>
+ </thead>
+ <tbody>
+   <tr>
+     <td>250-400</td>
+     <td>normal outdoor air level</td>
+   </tr>
+   <tr>
+     <td>400 - 1000</td>
+     <td>indoor, good airflow</td>
+   </tr>
+   <tr>
+     <td>1000-2000</td>
+     <td>drowsiness, poor air</td>
+   </tr>
+   <tr>
+     <td>2000-5000</td>
+     <td>headaches, sleepiness, stale air</td>
+   </tr>
+   <tr>
+     <td>&gt;5000</td>
+     <td>unusual air conditions, other gases</td>
+   </tr>
+   <tr>
+     <td>&gt;40000</td>
+     <td>harmful due to oxygen deprivation</td>
+   </tr>
+ </tbody>
+ </table>
+
+<p class="scrollParagraphComponent"> To get started, you'll need a CO2-sensor, a Raspberry Pi and some jumper cables.</p>
+
+<p class="scrollParagraphComponent"> Log into your Pi and run <code>sudo raspi-config</code>.
+ Go to <strong>5 Interfacing Options</strong>, then <strong>P6 Serial</strong>.
+ Select <strong>No</strong> on the login shell and <strong>Yes</strong> on the serial port hardware.</p>
+
+<p class="scrollParagraphComponent"> Then install pyserial for the sensor code.</p>
+
+<code class="scrollCodeBlockComponent"> sudo apt install python3-pip
+ pip3 install pyserial</code>
+
+<h3 class="scrollSectionComponent">Sensor setup</h3>
+
+<p class="scrollParagraphComponent"> The sensor has three interfaces, analog output, PWM output and a 9600 baud 3V/5V TTL UART interface. You basically send a request and the sensor responds.</p>
+<p class="scrollParagraphComponent"> I manually rewired the cable that came with the sensor, to have female jumper DuPont wires to attach to the Pi's GPIO pins.
+ The sensor has three interfaces, analog output, PWM output and a 9600 baud 3V/5V TTL UART interface. You basically send a request and the sensor responds.
+ You can also use F-M jumper wires and use the PWM interface instead.
+</p>
+<p class="scrollParagraphComponent"> The sensor pins are:</p>
+<ul class="scrollUnorderedListComponent">
+<li>PWM (yellow)</li>
+<li>TXD (green)</li>
+<li>RXD (blue)</li>
+<li>VCC (red)</li>
+<li>GND (black)</li>
+<li>AnalogOutput (white, not used) </li>
+<li>HD (brown, not used)</li>
+</ul>
+<p class="scrollParagraphComponent">and need to be attached to the Pi's pins like this:</p>
+
+<figure class="scrollImageComponent"><a href="assets/images/diagram.png" target="_blank"><img src="assets/images/diagram.png" width="498" height="593" loading="lazy"/></a></figure>
+
+<h3 class="scrollSectionComponent">Python code</h3>
+
+<p class="scrollParagraphComponent">Here's a simplified version of the code, for the full version <a href="https://github.com/charlottemach/mhz14a-sensor">check here</a>.</p>
+<code class="scrollCodeBlockComponent"> #!/usr/bin/env python3
+ import serial
+ import time
+ 
+ class CO2Sensor():
+   request = [0xff, 0x01, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79]
+ 
+   def __init__(self, port='/dev/ttyS0'):
+     self.serial = serial.Serial(
+         port = port,
+         timeout = 1
+     )
+ 
+   def get(self):
+     self.serial.write(bytearray(self.request))
+     response = self.serial.read(9)
+     if len(response) == 9:
+       current_time = time.strftime('%H:%M:%S', time.localtime())
+       return {"time": current_time, "ppa": (response[2] &lt;&lt; 8) | response[3], "temp": response[4]}
+     return -1
+ 
+ def main():
+   # other Pi versions might need CO2Sensor('/dev/ttyAMA0')
+   sensor = CO2Sensor()
+   print(sensor.get())
+ 
+ if __name__ == '__main__':
+   main()</code>
+
+<p class="scrollParagraphComponent">Now if you run </p>
+<code class="scrollCodeBlockComponent"> python3 filename.py</code>
+<p class="scrollParagraphComponent">you'll get the time, the current ppm value and the current temperature.</br></p>
+<p class="scrollParagraphComponent">Finished! :)</p>
+
+<figure class="scrollImageComponent"><a href="assets/images/sensor.jpg" target="_blank"><img src="assets/images/sensor.jpg" width="2663" height="2213" loading="lazy"/></a></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p class="scrollFileViewSourceUrlComponent"><a href="https://github.com/charlottemach/charlottemach.github.io/blob/main/2020-05-17-co2-sensor-raspi.scroll">View source</a></p></div>
+  <div class="scrollFooterComponent">
+   <div class="scrollSocialMediaIconsComponent">
+    <a href="mailto:charlotte.mach@fs.lmu.de"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Gmail icon</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg></a>
+    <a href="https://twitter.com/tinydata42"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Twitter icon</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+    <a href="https://github.com/charlottemach/"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+</div>
+   <a href="https://scroll.pub" class="scrollCommunityLinkComponent">Built with Scroll v31.4.1</a>
+</div>
+</body>
+</html>
