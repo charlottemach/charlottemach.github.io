@@ -135,7 +135,4 @@ Finished! :)
 
 image assets/images/sensor.jpg Pi and sensor
 
-groups index
-import settings.scroll
-import ga.scroll
 ga
