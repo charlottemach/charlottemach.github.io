@@ -1,6 +1,7 @@
 title Tracing with Jaeger on EKS with Istio
 date 2022-04-13
 import settings.scroll
+import ga.scroll
 import markups.scroll
 groups index
 keyboardNav
@@ -93,3 +94,4 @@ markdown
  The System Architecture view won't show anything, unless you're using the all-in-one setup.
  For seeing the entire distributed architecture you can use Kiali or add [Jaeger analytics](https://github.com/jaegertracing/jaeger-analytics) to fill in the blank page.
 
+ga

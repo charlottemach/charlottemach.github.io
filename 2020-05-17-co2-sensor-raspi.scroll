@@ -12,6 +12,7 @@ paragraph
 endSnippet
 groups index
 import settings.scroll
+import ga.scroll
 keyboardNav
 
 section CO2 levels and effects
@@ -136,3 +137,5 @@ image assets/images/sensor.jpg Pi and sensor
 
 groups index
 import settings.scroll
+import ga.scroll
+ga

@@ -2,6 +2,7 @@ title Writing a simple K8s Operator in Java
 date 2020-08-31
 import settings.scroll
 import markups.scroll
+import ga.scroll
 groups index
 keyboardNav
 
@@ -73,3 +74,5 @@ section Further reading
 markdown
  1. [Operator Pattern: https://kubernetes.io/docs/concepts/extend-kubernetes/operator/](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
  2. [More on CustomResources: https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/)
+
+ga

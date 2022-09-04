@@ -3,6 +3,7 @@ date 2021-05-03
 
 import settings.scroll
 import markups.scroll
+import ga.scroll
 groups index
 keyboardNav
 
@@ -66,3 +67,4 @@ code
  # systemctl restart isc-dhcp-relay
 markdown
  Finally check if your service is up and running correctly and then you can either check your DHCP server or tcpdump (e.g. `tcpdump -i <INTERFACE> -pvn port 67 and port 68` or `tcpdump -i <INTERFACE> -nv '(udp port 546 or port 547)'` for IPv6).
+ga

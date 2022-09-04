@@ -10,6 +10,7 @@ aftertext
 endSnippet
 groups index
 import settings.scroll
+import ga.scroll
 keyboardNav
 
 paragraph
@@ -171,3 +172,5 @@ section Notes
 
 paragraph
  Blog originally published on <a href=https://blog.container-solutions.com/how-to-create-cross-account-user-roles-for-aws-with-terraform>https://blog.container-solutions.com/how-to-create-cross-account-user-roles-for-aws-with-terraform</a>
+
+ga

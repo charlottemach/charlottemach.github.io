@@ -2,6 +2,7 @@ title Containerizing a simple Flask App
 date 2021-11-29
 import settings.scroll
 import markups.scroll
+import ga.scroll
 groups index
 keyboardNav
 
@@ -196,3 +197,5 @@ code
 markdown
  And your WebApp in now running on [http://127.0.0.1:5000](http://127.0.0.1:5000)!
 image assets/images/flaskapp-safari.png WebApp
+
+ga

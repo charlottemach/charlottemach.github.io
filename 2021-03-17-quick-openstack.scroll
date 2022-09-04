@@ -3,6 +3,7 @@ date 2021-03-17
 
 import settings.scroll
 import markups.scroll
+import ga.scroll
 groups index
 keyboardNav
 
@@ -132,3 +133,5 @@ code
 subsection Notes
 markdown
  For more info check out the [OpenStack docs](https://docs.openstack.org/ocata/user-guide/).
+
+ga

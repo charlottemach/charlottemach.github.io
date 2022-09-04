@@ -11,6 +11,7 @@ paragraph
  The <a href="https://www.opennetworking.org/cord/">CORD platform</a> gives network operators a cloud-native and open-source reference implementation of a Mobile Edge Computing stack.
 
 import settings.scroll
+import ga.scroll
 groups index
 keyboardNav
 endSnippet
@@ -114,3 +115,4 @@ paragraph
 subsection Notes
 paragraph
  There are other options of creating a custom XOS service, or using the other options for creating Kubernetes resources e.g. using KubernetesSecret or KubernetesSecretVolumeMount to avoid using KubernetesResourceInstance for everything, but at the time of this post very few resources are covered by this (Pods, secrets, configmaps, NodePort services).
+ga

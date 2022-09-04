@@ -2,6 +2,7 @@ title Running PowerDNS in docker-compose
 date 2021-09-08
 import settings.scroll
 import markups.scroll
+import ga.scroll
 groups index
 keyboardNav
 
@@ -110,3 +111,5 @@ code
  dig <domain> @serverIP
 markdown
  Adding a `--port 5300` to the dig command, let's you test the authoritative server directly. 
+
+ga
