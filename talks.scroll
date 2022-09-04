@@ -1,0 +1,43 @@
+title Talks
+date 3030-00-00
+
+import settings.scroll
+import markups.scroll
+import ga.scroll
+keyboardNav
+
+section Conference Talks
+
+markdown
+ * [Kubernetes Operators for Java Developers](https://2021.javazone.no/#/program/04c3137d-6fc7-45e4-82e0-0c713b8a9aad)  
+   JavaZone, December 2021
+ *  [The Bleeding Edge: Kubernetes Deployment Models](https://onesummit2021.sched.com/event/lStY/the-bleeding-edge-kubernetes-deployment-models-charlotte-mach-container-solutions?iframe=no) [Recording](https://www.youtube.com/watch?v=uq5DrCwnqTM)  
+   ONE Summit + K8s on Edge Day, October 2021
+ * [Kubernetes Deployment Models at the Bleeding Edge](https://www.containerdays.io/agenda/conferenceday1/#kubernetes-depl)  
+   ContainerDays, September 2021
+ * [Getting started with Kubernetes Operators in Java](https://www.youtube.com/watch?v=1kePLR2abno)  
+   JFokus, May 2021
+ * [The How and Why of writing a Kubernetes Operator in Java](https://jaxlondon.com/cloud-kubernetes-serverless/the-how-and-why-of-writing-a-kubernetes-operator-in-java/)  
+   JAX, October 2020
+
+section Meetup Talks
+markdown
+ * [Kubernetes Operators in Java](https://www.youtube.com/watch?v=VOZ_ukwx_2s)  
+   Software Circus, September 2020
+
+section Other
+markdown
+ * [Livestream Cluster Fixing in Klustered](https://www.youtube.com/watch?v=ozbE25Y_rcM)  
+   July 2021
+ * [Co-hosting WTF is SRE](https://www.youtube.com/watch?v=raHsjzbFe_s&list=PLTXrNQgC6vMQCYthuRU5G-AMFqEwtDrud)  
+   May 2021
+ * [Writing your Operator in Java](https://events.redhat.com/profile/form/index.cfm?PKformID=0x2910810001)   
+   RedHat Webinar, December 2020
+ * [New Stack Podcast](https://thenewstack.io/next-generation-cloud-computing-does-not-involve-putting-a-server-in-a-container/)  
+   October 2020
+ * [WIT Interview (German)](https://entwickler.de/online/karriere/women-in-tech-mach-579946901.html)  
+   October 2020
+ * [Oracle Webinar - Getting started with Cloud Native (German)](https://www.brighttalk.com/webcast/16067/289263)  
+   October 2017
+
+ga

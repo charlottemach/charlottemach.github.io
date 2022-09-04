@@ -11,3 +11,6 @@ _pages/
 *.zip
 *.vi
 *~
+
+*.html
+feed.xml

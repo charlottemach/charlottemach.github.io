@@ -1,0 +1,116 @@
+title Adventures in Telco I: Setting up a Kubernetes Deployment using XOS
+date 2020-06-25
+
+aftertext
+ dateline
+ This blog post describes how you can deploy a few Kubernetes resources onto an edge computing platform, so that those resources can be managed via XOS.
+
+section What is XOS?
+
+paragraph
+ The <a href="https://www.opennetworking.org/cord/">CORD platform</a> gives network operators a cloud-native and open-source reference implementation of a Mobile Edge Computing stack.
+
+import settings.scroll
+groups index
+keyboardNav
+endSnippet
+
+paragraph
+ It mostly consists of 
+list
+ - XOS, the extensible service control plane responsible for service management 
+ - ONOS the SDN controller, taking care of the infrastructure devices and links, while managing the network (from paths to flow rules)
+ - VOLTHA (optional), virtual OLT hardware abstraction, broadband as a service, PON network management
+ - Kafka, for event processing between the different components 
+ - Logging and monitoring tools 
+paragraph
+ all of which are containerized and running on Kubernetes.
+
+paragraph 
+ XOS is helping you generate the control plane by allowing you to define your own service models that are then synchronized to either Kubernetes, OpenStack or other environments.
+
+paragraph
+ Usually you'd have to write a model (detailing attributes and components of future resources) as well as a synchronizer (detailing what steps to take for which model), for example for custom services.
+
+paragraph
+ Luckily there is already a <a href=https://guide.opencord.org/master/kubernetes-service/kubernetes-service.html>base-kubernetes</a> service, that allows you to wrap your Kubernetes resources.
+
+section How to deploy CORD
+
+image assets/images/xos-diagram.png "Deployment Workflow"
+
+subsection Step 0
+paragraph
+ Starting with the initial step in the diagram above, we want a CORD installation that includes XOS. The simplest and fastest way of doing that is installing <a href=https://guide.opencord.org/profiles/comac/install/ciab.html>COMAC-in-a-box</a> by running
+code
+ git clone https://gerrit.opencord.org/automation-tools
+ cd automation-tools/comac-in-a-box
+ make
+ make test
+paragraph
+ That installs everything for you, including the Kubernetes cluster CORD is running on.
+
+subsection Step 1
+paragraph
+ This is also covered as the script sets up a base-kubernetes, registering the Kubernetes service model with XOS and deploying the Kubernetes synchronizer (see default namespace).
+
+section How to talk to the synchronizer
+
+subsection Step 2
+paragraph
+ This part requires us to write a TOSCA YAML file to wrap the Kubernetes resources.
+paragraph
+ tosca.yaml:
+code
+ tosca_definitions_version: tosca_simple_yaml_1_0
+ 
+ description: Make a STK image via yaml
+ 
+ imports:
+   - custom_types/kubernetesservice.yaml
+   - custom_types/kubernetesresourceinstance.yaml
+ 
+ topology_template:
+   node_templates:
+     service#kubernetes:
+       type: tosca.nodes.KubernetesService
+       properties:
+         name: kubernetes
+         must-exist: true
+ 
+     app_resource_one:
+       type: tosca.nodes.KubernetesResourceInstance
+       properties:
+         name: "app-resource-one"
+         resource_definition: |
+         <insert Kubernetes YAML>
+       requirements:
+         - owner:
+             node: service#kubernetes
+             relationship: tosca.relationships.BelongsToOne
+ 
+     ...
+     app_resource_n:
+       type: tosca.nodes.KubernetesResourceInstance
+       properties:
+         name: "app-resouce-n"
+         resource_definition: |
+         <insert Kubernetes YAML>
+       requirements:
+         - owner:
+             node: service#kubernetes
+             relationship: tosca.relationships.BelongsToOne
+
+paragraph
+ This YAML file can now be sent to the TOSCA Pod (which is a part of the XOS service) via a POST request. The username and password are configured for CORD, defaults and how to configure them can be found <a href=https://guide.opencord.org/operating_cord/gui.html>here</a>.
+
+code
+ curl -H "xos-username: $USERNAME" -H "xos-password: $PASSWORD" -X POST --data-binary @tosca.yaml http://$( hostname ):30007/run
+
+subsection Step 3
+paragraph
+ That creates both instances in XOS (see in the XOS GUI at port 30001) and in Kubernetes (see <code>kubectl get pods -A</code>). For deleting those instances repeat the curl with a <code>/delete</code> instead of <code>/run</code>.
+
+subsection Notes
+paragraph
+ There are other options of creating a custom XOS service, or using the other options for creating Kubernetes resources e.g. using KubernetesSecret or KubernetesSecretVolumeMount to avoid using KubernetesResourceInstance for everything, but at the time of this post very few resources are covered by this (Pods, secrets, configmaps, NodePort services).

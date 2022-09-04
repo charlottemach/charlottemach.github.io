@@ -1,0 +1,10 @@
+importOnly
+siteTitle Cookies & Containers
+siteDescription Or how I learned to love the cloud.
+github https://github.com/charlottemach/
+viewSourceBaseUrl https://github.com/charlottemach/charlottemach.github.io/blob/main
+twitter https://twitter.com/tinydata42
+scrollCss scrollStyle.css
+email charlotte.mach@fs.lmu.de
+rssFeedUrl feed.xml
+baseUrl https://charlottemach.com

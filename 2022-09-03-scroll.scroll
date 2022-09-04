@@ -1,0 +1,48 @@
+title Migrating to Scroll
+date 2022-09-03
+import settings.scroll
+import markups.scroll
+groups index
+keyboardNav
+
+aftertext
+ dateline
+ After running this blog with Jekyll and github-pages for over two years, I ran into Scroll and fell in love with the newspaper-y style and minimalist setup.
+ link https://jekyllrb.com/ Jekyll
+ link https://scroll.pub/ Scroll
+
+endSnippet
+
+section Getting started
+paragraph
+ Scroll is a easy to install as
+code
+ npm install -g scroll-cli
+paragraph
+ or
+code
+ git clone https://github.com/breck7/scroll
+ cd scroll
+ npm install -g .
+markdown
+ and then running `scroll init` inside my blog directory. After that I removed all leftovers from Jekyll and converted my posts to `.scroll` files.
+
+section Changes
+paragraph
+ The structure changes a bit, with all files in a flat structure (aside from images, those can stay in a subfolder).
+aftertext
+ For the previous markdown in my posts I just added the markups.scroll to avoid too much rewriting.
+ link https://github.com/breck7/scroll/blob/main/public/blog/markups.scroll markups.scroll
+paragraph
+ There are a few features that go away with the switch, namely analytics and tagged pages.
+
+section Running locally
+markdown
+ For local rendering, it's now `scroll watch` instead of `jekyll -s`, though you can also run `scroll build` and open the `.html` files in your browser directly.
+
+section Github Pages
+
+section Before & Now
+paragraph
+ Comparing the previous design
+image assets/images/screenshot_old.png

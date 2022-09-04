@@ -1,0 +1,173 @@
+title Cross-Account Roles in AWS via Terraform
+date 2020-04-07
+permalink cross-account-roles-aws-terraform.html
+
+aftertext
+ dateline
+ Stuck on creating cross-account AWS IAM roles via terraform? 
+ Most companies these days use multiple cloud accounts to separate resources, customers, or even internal departments. With multiple AWS accounts, it’s practical to rely on a so-called bastion account for Identity and Access Management (IAM) users. It serves as one central place for users, S3 buckets, and other shared resources.
+
+endSnippet
+groups index
+import settings.scroll
+keyboardNav
+
+paragraph
+ If you are not using AWS Organizations, you can follow the best practices guide for multi-account setups <a href=https://gruntwork.io/guides/foundations/how-to-configure-production-grade-aws-account-structure/#production_grade_design>here</a>.
+
+While you could also just replicate your users across those other accounts, the simplest and cleanest way to access any resources there is to use AWS roles. Roles enable users and AWS services to access other AWS accounts without having to create a user in those accounts first. This post shows how to set up access to resources in another account via Terraform. 
+
+section Gaining Trust
+
+paragraph
+ The way roles work is by using a web service called AWS Security Token Service (STS) to request temporary credentials for IAM, which are then used to identify you as that role. A user can request access to a role, which will grant that user that role’s temporary privileges.
+
+paragraph
+ For that to be secure, there needs to be a trust established between the account or user and the role. It is possible to set up a role without restrictions that anyone can use, but that's very insecure and not recommended.
+
+paragraph
+ Trust works by defining a policy to make that role assumable by only certain users, as well as a policy to allow only certain users to assume that role, taking care of permissions in both accounts. This might seem like doing the same thing twice, but you’re actually establishing the trust from both sides by setting those two policies.
+
+image assets/images/awsroles1.png
+
+section Setting Up the Role
+
+paragraph
+ In this example, we’re setting up a user in an AWS account we’ll call <i>utils</i>:
+code
+ resource "aws_iam_user" "random" {
+   name = "random_user"
+   tags = {
+     name = "random"
+   }
+ }
+
+We’re giving it the right to assume a specific role in another account.
+
+code
+ resource "aws_iam_policy" "prod_s3" {
+   name        = "prod_s3"
+   description = "allow assuming prod_s3 role"
+   policy = jsonencode({
+     Version = "2012-10-17",
+     Statement = [
+       {
+         Effect   = "Allow",
+         Action   = "sts:AssumeRole",
+         Resource = "arn:aws:iam::${data.aws_caller_identity.prod.account_id}:role/${aws_iam_role.prod_list_s3.name}"
+     }]
+   })
+ }
+  
+ resource "aws_iam_user_policy_attachment" "prod_s3" {
+   user       = aws_iam_user.random.name
+   policy_arn = aws_iam_policy.prod_s3.arn
+ }
+
+paragraph
+ Since we’re using the same Terraform for two AWS accounts, we’re defining a second provider, which is then used to make sure the next resources get created in the second account instead of the first.
+
+code
+ provider "aws" {
+   version = "~> 2.49"
+   profile = "utils"
+   region  = var.region_utils
+ }
+ provider "aws" {
+   version = "~> 2.49"
+   profile = "prod"
+   region  = var.region_prod
+   alias   = "prod"
+ }
+
+paragraph
+ In the second account (let’s call it <i>prod</i>), we’re creating a role with a policy to allow that role to be assumed from the <i>utils</i> account.
+
+code
+ resource "aws_iam_role" "prod_list_s3" {
+   name = "s3-list-role"
+   assume_role_policy = jsonencode({
+     Version = "2012-10-17",
+     Statement = [
+       {
+         Effect    = "Allow",
+         Action    = "sts:AssumeRole",
+         Principal = { "AWS" : "arn:aws:iam::${data.aws_caller_identity.utils.account_id}:root" }
+     }]
+   })
+   provider = aws.prod
+ }
+
+paragraph
+ We are also adding a policy to grant the newly created role some permissions in the prod account. In this case, we’re only letting it list a few S3 buckets.
+
+paragraph
+ We create a JSON file for the S3 permissions, called “role_permissions_policy.json”. Those could be done inline like the other policies, but having them separate makes the Terraform files easier to read —especially with longer statements.
+
+code
+ {
+     "Version": "2012-10-17",
+     "Statement": [
+         {
+             "Effect": "Allow",
+             "Action": "s3:ListAllMyBuckets",
+             "Resource": "*"
+         }
+     ]
+ }
+
+paragraph
+ Back in the Terraform files we attach that policy (by referring to the JSON file) to the role we created before.
+
+code
+ resource "aws_iam_policy" "s3_list_all" {
+   name        = "s3_list_all"
+   description = "allows listing all s3 buckets"
+   policy      = file("role_permissions_policy.json")
+  
+   provider = aws.prod
+ }
+  
+ resource "aws_iam_policy_attachment" "s3_list_all" {
+   name       = "list s3 buckets policy to role"
+   roles      = ["${aws_iam_role.prod_list_s3.name}"]
+   policy_arn = aws_iam_policy.s3_list_all.arn
+   provider   = aws.prod
+ }
+
+The complete files can also be found in <a href=https://github.com/charlottemach/cross-account-aws-iam-roles>this repository</a>.
+Now apply those Terraform files by running terraform init and then terraform apply. 
+
+section Assuming the Role
+
+image assets/images/awsroles2.png
+
+paragraph
+ If you want to use the newly created user, add a password to it and login as that user into the utils account.
+ Try out the role to access the S3 buckets in prod by following the steps in the <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-console.html">documentation</a>.
+
+subsection Alternatively use the AWS CLI
+
+Get the role ARN.
+code
+ aws iam list-roles --query "Roles[?RoleName == 's3-list-role'].[RoleName, Arn]"
+Request STS from AWS using the role ARN and a session name of your choosing.
+code
+ aws sts assume-role --role-arn "<role_arn>" --role-session-name "<name>"
+User gets temporary credentials, export these as environment variables.
+code
+ export AWS_ACCESS_KEY_ID=ExampleAccessKeyID
+ export AWS_SECRET_ACCESS_KEY=ExampleSecretKey
+ export AWS_SESSION_TOKEN=ExampleSessionToken
+Access S3 using the temp credentials.
+code
+ aws s3api list-buckets
+
+paragraph
+ Ta-da! We can now login into our utils account, assume the role, and look at the prod S3 buckets.
+ Of course this is a fairly simple example, but roles are also immensely useful for granting temporary access or allowing users to switch between different accounts and permission levels quickly. Admins can check user permissions without logging in and out, developers can access different accounts without changing users, and pipelines can function across AWS accounts without multiple sets of access keys.
+
+section Notes
+
+paragraph
+ Blog originally published on <a href=https://blog.container-solutions.com/how-to-create-cross-account-user-roles-for-aws-with-terraform>https://blog.container-solutions.com/how-to-create-cross-account-user-roles-for-aws-with-terraform</a>

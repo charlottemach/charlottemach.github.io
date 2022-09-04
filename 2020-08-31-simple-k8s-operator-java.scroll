@@ -1,0 +1,75 @@
+title Writing a simple K8s Operator in Java
+date 2020-08-31
+import settings.scroll
+import markups.scroll
+groups index
+keyboardNav
+
+aftertext
+ dateline
+ Kubernetes Operator are often used to simplify the usage of applications or software in and outside a K8s cluster. They allow you to extend K8s by adding custom controllers for custom resources, allowing for example simpler database upgrades, application maintenance and automated creation of K8s resources.
+
+paragraph
+
+markdown
+ There is a large number of Operators readily availabe, from [OperatorHub](https://operatorhub.io/) or [GitHub](https://github.com/operator-framework/awesome-operators).
+
+section Why write your own?
+
+paragraph
+ You might be providing an application that needs certain maintenance that you want to automate. You might be providing a database to your developers that you don't want them to have to provision themselves. You might just wanna learn more about Kubernetes.
+
+endSnippet
+section Getting started
+
+list
+ - Create a simple Java application in your favourite IDE (e.g. <a href=https://www.jetbrains.com/help/idea/creating-and-running-your-first-java-application.html>this how-to for IntelliJ</a>).
+ - Add Maven support (<a href=https://www.jetbrains.com/help/idea/convert-a-regular-project-into-a-maven-project.html#develop_with_maven>beginner's guide</a>).
+ - Add the Maven dependency for the <a href=https://github.com/ContainerSolutions/java-operator-sdk/blob/master/README.md>java-operator-sdk</a>.
+
+code
+    <dependency>
+      <groupId>com.github.containersolutions</groupId>
+      <artifactId>operator-framework</artifactId>
+      <version>{see https://search.maven.org/search?q=a:operator-framework for latest version}</version>
+    </dependency>
+
+list
+ - Create a CRD.yaml for your application (<a href=https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/crd/crd.yaml>example</a>).
+ - Create a Controller class with two methods (<code>deleteResource</code> and <code>createOrUpdateResource</code>). This is the code being run when the Kubernetes API Server sends events about your custom resource.
+ - Create a POJO representation for your CRD, <a href=https://github.com/ContainerSolutions/java-operator-sdk/tree/master/samples/webserver/src/main/java/com/github/containersolutions/operator/sample>see samples with spec and status here</a>.
+ - Register your controller in your main class. 
+code
+ public class YourOperator {
+ 
+    public static void main(String[] args) {
+        Operator operator = new Operator(new DefaultKubernetesClient());
+        operator.registerController(new YourController());
+    }
+ }
+list
+ - Before running your code, make sure your local <code>kubectl</code> points to a cluster, for example if <code>kubectl version</code> gives no errors. If not check how to <a href=https://kubernetes.io/docs/tasks/tools/install-kubectl/>set it up</a>.
+ - Package your code into a jar (<a href=https://www.jetbrains.com/help/idea/creating-and-running-your-first-java-application.html#package>beginner's guide</a>).
+ - Create a Dockerfile for your Operator (<a href=https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/Dockerfile>beginner's guide</a>).
+
+code 
+ FROM openjdk:12-alpine
+ 
+ ARG JAR_FILE
+ ADD target/${JAR_FILE} /usr/share/operator/your-operator.jar
+ 
+ ENTRYPOINT ["java", "-jar", "/usr/share/operator/your-operator.jar"]
+
+list
+ - Create your CRD and deploy your Operator to the cluster (<a href=https://github.com/ContainerSolutions/java-operator-sdk/blob/master/samples/webserver/k8s/deployment.yaml>example for deployment YAML</a>).
+code
+ kubectl apply -f CRD.yaml
+ kubectl apply -f deployment.yaml
+list
+ - Create your CustomResource, matching your CRD and watch how the Operator reacts to the creation of the CustomResource!
+
+section Further reading
+
+markdown
+ 1. [Operator Pattern: https://kubernetes.io/docs/concepts/extend-kubernetes/operator/](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
+ 2. [More on CustomResources: https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/)
