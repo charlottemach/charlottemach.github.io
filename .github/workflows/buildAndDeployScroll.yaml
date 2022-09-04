@@ -14,6 +14,7 @@ jobs:
       - name: Install and Build
         run: |
           npm install scroll-cli
+          npm install -g marked
           ./node_modules/scroll-cli/scroll.js build
           rm .gitignore
       - name: Deploy 🚀
