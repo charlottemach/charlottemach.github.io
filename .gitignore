@@ -3,6 +3,7 @@ _pages/
 
 .DS_Store
 
+.jekyll-cache/
 # Numerous always-ignore extensions
 *.diff
 *.log
